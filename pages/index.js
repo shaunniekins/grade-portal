@@ -1,121 +1,147 @@
-// import Head from 'next/head'
-// import Image from 'next/image'
-import { Inter } from '@next/font/google'
-// import styles from '../styles/Home.module.css'
-// import { Flex, Spacer } from '@chakra-ui/react'
-import { Card, CardHeader, CardBody, CardFooter, Flex } from '@chakra-ui/react'
+import Head from "next/head";
+import { google } from "googleapis";
 import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
   Button,
-  Box,
-  Checkbox,
-  Form,
-  // BorderRadius
-  // Field,
-  Heading,
-  BoxShadow,
-  Text
-} from '@chakra-ui/react'
-// import { extendTheme } from '@chakra-ui/react'
+  Card,
+  CardHeader,
+  CardBody,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  Input,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 
-import { Formik, Field } from 'formik'
+import { Formik, Field } from "formik";
+import React from "react";
+import { useRouter } from "next/router";
 
-import { PhoneIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons'
+export async function getServerSideProps() {
+  //Auth
+  const auth = await google.auth.getClient({
+    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+  });
+  const sheets = google.sheets({ version: "v4", auth });
 
-import { Stack, HStack, VStack } from '@chakra-ui/react'
+  //Query
+  const responseUser = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `SCIENCE Q1!B12:B50`,
+  });
 
-import { useState } from 'react'
-import React from 'react'
+  const responsePass = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `SCIENCE Q1!C12:C50`,
+  });
 
-  
+  //Result
+  const user = [];
+  const pass = [];
+  responseUser.data.values.forEach((value) => user.push(value));
+  responsePass.data.values.forEach((value) => pass.push(value));
 
-const inter = Inter({ subsets: ['latin'] })
+  return {
+    props: {
+      user,
+      pass,
+    },
+  };
+}
 
-export default function Home() {
+export default function Home({ user, pass }) {
+  const router = useRouter();
 
-  // const [input, setInput] = useState('')
-
-  // const handleInputChange = (e) => setInput(e.target.value)
-
-  // const isError = input === ''
-
-  const [show, setShow] = React.useState(false)
-  const handleClick = () => setShow(!show)
+  const handleSubmit = (values, { setSubmitting }) => {
+    let userExists = false;
+    let count = 0;
+    user.forEach(function (value, i) {
+      if (value == values.username) {
+        count = i;
+        userExists = true;
+      }
+    });
+    userExists && pass[count] == values.password
+      ? setTimeout(() => {
+          router.push(`/table/${count + 12}`);
+          setSubmitting(false);
+        }, 100)
+      : alert("Incorrect username or password");
+  };
 
   return (
     <>
-    <Flex bg='gray.100' align='center' justify='center' h='100vh'>
-      <Card as='b' bg='white' px={4} py={7} rounded='xl' w={450} boxShadow='2xl'>
-        <CardHeader  mb={2} py={1} align='center'>
-          <Text fontSize='xl' size='md'>GRADE PORTAL</Text>
-        </CardHeader>
-        <CardBody>
-          <Formik
-            initialValues={{
-              email: '',
-              password: ''
-            }}
-            onSubmit={(values) => {
-              alert(JSON.stringify(values, null, 2));
-            }}
-          >
-            {({ handleSubmit, errors, touched }) => (
-              <form onSubmit={handleSubmit}>
-                <VStack spacing={5} align='flex-start'>
-                  <FormControl>
-                    {/* <FormLabel htmlFor='email'>Email Address</FormLabel> */}
-                    <Field 
-                      as={Input} 
-                      id='email' 
-                      name='email' 
-                      type='email' 
-                      variant='filled' 
-                      placeholder='Email'
-                      required
-                    />
-                  </FormControl>
-                  <FormControl
-                    isInvalid={!!errors.password && touched.password}
-                  >
-                    {/* <FormLabel htmlFor='password'>Password</FormLabel> */}
-                    <Field 
-                      as={Input} 
-                      id='password' 
-                      name='password' 
-                      type='password' 
-                      variant='filled'
-                      placeholder='Password'
-                      required
-                      validate={(value) => {
-                        if(value.length <=6) {
-                          return 'Password should be over 6 characters';
-                        }
-                      }}
-                    />
-                    <FormErrorMessage>{errors.password}</FormErrorMessage>
-                  </FormControl>
+      <Head>
+        <title>Grade Portal | Login</title>
+      </Head>
+      <Flex bg="gray.100" align="center" justify="center" h="100vh">
+        <Card
+          as="b"
+          bg="white"
+          px={4}
+          py={7}
+          rounded="xl"
+          w={450}
+          boxShadow="2xl">
+          <CardHeader mb={2} py={1} align="center">
+            <Text fontSize="xl" size="md">
+              GradExpress
+            </Text>
+          </CardHeader>
+          <CardBody>
+            <Formik
+              initialValues={{
+                username: "",
+                password: "",
+              }}
+              onSubmit={handleSubmit}>
+              {({ handleSubmit, errors, touched }) => (
+                <form onSubmit={handleSubmit}>
+                  <VStack spacing={5} align="flex-start">
+                    <FormControl>
+                      <Field
+                        as={Input}
+                        id="username"
+                        name="username"
+                        type="text"
+                        variant="filled"
+                        placeholder="Username"
+                        required
+                      />
+                    </FormControl>
+                    <FormControl
+                      isInvalid={!!errors.password && touched.password}>
+                      <Field
+                        as={Input}
+                        id="password"
+                        name="password"
+                        type="password"
+                        variant="filled"
+                        placeholder="Password"
+                        required
+                        validate={(value) => {
+                          if (value.length <= 6) {
+                            return "Password should be over 6 characters";
+                          }
+                        }}
+                      />
+                      <FormErrorMessage>{errors.password}</FormErrorMessage>
+                    </FormControl>
                   </VStack>
                   <Button
-                    type='submit'
-                    colorScheme='green'
-                    w='full'
-                    mt={8}
-                  >
+                    type="submit"
+                    bg="blue.600"
+                    color="white"
+                    w="full"
+                    mt={8}>
                     LOGIN
                   </Button>
-              </form>
-            )}
-          </Formik>
-        </CardBody>
-      </Card>
-    </Flex>
+                </form>
+              )}
+            </Formik>
+          </CardBody>
+        </Card>
+      </Flex>
     </>
-  )
+  );
 }
