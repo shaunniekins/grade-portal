@@ -3,6 +3,7 @@ import Head from "next/head";
 import { React } from "react";
 import { useState } from "react";
 import Layout from "../../components/Layout";
+import { useAuth } from "../useAuth";
 import {
   Box,
   Button,
@@ -28,6 +29,7 @@ import {
   CircularProgressLabel,
 } from "@chakra-ui/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export async function getServerSideProps({ query }) {
   //Auth
@@ -124,7 +126,7 @@ export async function getServerSideProps({ query }) {
   };
 }
 
-export default function Post({
+const Post = ({
   id,
   max_written_works,
   max_performance_tasks,
@@ -134,8 +136,16 @@ export default function Post({
   quarterly_assessment,
   nameVal,
   userNameVal,
-}) {
+}) => {
+  useAuth();
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const router = useRouter();
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    localStorage.setItem("isAuthenticated", false);
+    router.push(`/`);
+  };
 
   let buttonText,
     iterate = 0;
@@ -272,9 +282,9 @@ export default function Post({
                 </VStack>
                 <Divider />
                 <Box pt={1} fontSize="xs">
-                  <Link href="/">
-                    <Text as="samp">LOGOUT</Text>
-                  </Link>
+                  <Text as="samp" onClick={handleClick}>
+                    LOGOUT
+                  </Text>
                 </Box>
               </Box>
               <Image
@@ -634,4 +644,6 @@ export default function Post({
       </Flex>
     </>
   );
-}
+};
+
+export default Post;

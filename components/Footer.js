@@ -13,11 +13,6 @@ const Footer = () => {
       borderColor="yellow"
       justify="center"
       w="100vw"
-      position="absolute"
-      // left="0"
-      bottom="0"
-      // right="0"
-      // zIndex={2}
       py={{
         base: "2",
         lg: "3",

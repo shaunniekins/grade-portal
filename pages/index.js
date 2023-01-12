@@ -16,6 +16,7 @@ import {
 import { Formik, Field } from "formik";
 import React from "react";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export async function getServerSideProps() {
   //Auth
@@ -52,22 +53,68 @@ export async function getServerSideProps() {
 export default function Home({ user, pass }) {
   const router = useRouter();
 
-  const handleSubmit = (values, { setSubmitting }) => {
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
+  // console.log("hello");
+
+  const handleSubmit = (e) => {
+    // console.log("visited here");
+    e.preventDefault();
+    // localStorage.setItem("isAuthenticated", false);
+
     let userExists = false;
     let count = 0;
-    user.forEach(function (value, i) {
-      if (value == values.username) {
+
+    user.forEach(function (userV, i) {
+      if (formData.username == userV[0]) {
         count = i;
         userExists = true;
+        console.log("Data retrived username: " + userV[0]);
+        console.log("Form data username: " + formData.username);
+        // console.log(userExists);
+        console.log(count);
+        // i++;
       }
     });
-    userExists && pass[count] == values.password
-      ? setTimeout(() => {
-          router.push(`/table/${count + 12}`);
-          setSubmitting(false);
-        }, 100)
-      : alert("Incorrect username or password");
+
+    if (userExists == true && pass[count] == formData.password) {
+      //authenticated
+      localStorage.setItem("isAuthenticated", "true");
+      router.push(`/table/${count + 12}`);
+    } else {
+      setError("Invalid username or password");
+      alert("Incorrect username or password");
+      console.log("Data retrieved pass:" + pass[count]);
+      console.log("Form data pass:" + formData.password);
+    }
+
+    // if (formData.username == user && formData.password == pass) {
+    //   // authenticated
+    //   // Router.push("/secret");
+    //   Router.push(`/table/${count + 12}`);
+    // } else {
+    //   setError("Invalid email or password");
+    // }
   };
+
+  // const handleSubmit = (values, { setSubmitting }, e) => {
+  //   let userExists = false;
+  //   let count = 0;
+  //   user.forEach(function (value, i) {
+  //     if (value == values.username) {
+  //       count = i;
+  //       userExists = true;
+  //     }
+  //   });
+  //   userExists && pass[count] == values.password
+  //     ? setTimeout(() => {
+  //         e.preventDefault();
+  //         Cookies.set("loggedin", true);
+  //         router.push(`/table/${count + 12}`);
+  //         setSubmitting(false);
+  //       }, 100)
+  //     : alert("Incorrect username or password");
+  // };
 
   return (
     <>
@@ -89,45 +136,46 @@ export default function Home({ user, pass }) {
             </Text>
           </CardHeader>
           <CardBody>
-            <Formik
-              initialValues={{
-                username: "",
-                password: "",
-              }}
-              onSubmit={handleSubmit}>
-              {({ handleSubmit, errors, touched }) => (
-                <form onSubmit={handleSubmit}>
-                  <VStack spacing={5} align="flex-start">
-                    <FormControl>
-                      <Field
-                        as={Input}
-                        id="username"
-                        name="username"
-                        type="text"
-                        variant="filled"
-                        placeholder="Username"
-                        required
-                      />
-                    </FormControl>
-                    <FormControl
-                      isInvalid={!!errors.password && touched.password}>
-                      <Field
-                        as={Input}
-                        id="password"
-                        name="password"
-                        type="password"
-                        variant="filled"
-                        placeholder="Password"
-                        required
-                        validate={(value) => {
-                          if (value.length <= 6) {
-                            return "Password should be over 6 characters";
-                          }
-                        }}
-                      />
-                      <FormErrorMessage>{errors.password}</FormErrorMessage>
-                    </FormControl>
-                  </VStack>
+            <Formik onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit}>
+                <VStack spacing={5} align="flex-start">
+                  <FormControl>
+                    <Field
+                      as={Input}
+                      id="username"
+                      name="username"
+                      type="text"
+                      variant="filled"
+                      placeholder="Username"
+                      required
+                      value={formData.username}
+                      onChange={(e) =>
+                        setFormData({ ...formData, username: e.target.value })
+                      }
+                    />
+                  </FormControl>
+                  <FormControl>
+                    {/* isInvalid={!!errors.password && touched.password}> */}
+                    <Field
+                      as={Input}
+                      id="password"
+                      name="password"
+                      type="password"
+                      variant="filled"
+                      placeholder="Password"
+                      required
+                      value={formData.password}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
+                      // validate={(value) => {
+                      //   if (value.length <= 6) {
+                      //     return "Password should be over 6 characters";
+                      //   }
+                      // }}
+                    />
+                    {/* <FormErrorMessage>{errors.password}</FormErrorMessage> */}
+                  </FormControl>
                   <Button
                     type="submit"
                     bg="blue.600"
@@ -136,8 +184,8 @@ export default function Home({ user, pass }) {
                     mt={8}>
                     LOGIN
                   </Button>
-                </form>
-              )}
+                </VStack>
+              </form>
             </Formik>
           </CardBody>
         </Card>
