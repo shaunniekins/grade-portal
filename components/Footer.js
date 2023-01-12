@@ -12,7 +12,7 @@ const Footer = () => {
       borderTop="2px"
       borderColor="yellow"
       justify="center"
-      w="100vw"
+      w="100%"
       py={{
         base: "2",
         lg: "3",

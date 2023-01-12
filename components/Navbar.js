@@ -4,7 +4,7 @@ const Header = () => {
   return (
     <Flex
       as="nav"
-      w="100vw"
+      w="100%"
       bg="blue.900"
       boxShadow="xl"
       borderBottom="4px"

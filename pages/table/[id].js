@@ -269,7 +269,10 @@ const Post = ({
           <title>GradExpress | Dashboard</title>
         </Head>
         <Layout userId={id}>
-          <Flex mx={40} mt={8} justify={{ base: "center", lg: "flex-end" }}>
+          <Flex
+            mx={{ base: 10, md: 40 }}
+            mt={8}
+            justify={{ base: "center", lg: "flex-end" }}>
             <Stack direction="row" justify="center" align="center">
               <Box align="center">
                 <VStack spacing={-1}>
@@ -297,37 +300,58 @@ const Post = ({
               />
             </Stack>
           </Flex>
-          <Flex mx={40}>
-            <Tabs variant="enclosed" w="100%" align="start">
+          <Flex mx={{ base: 5, md: 10, lg: 20, xl: 40 }}>
+            <Tabs
+              variant="enclosed"
+              w="100%"
+              align={{ base: "center", lg: "start" }}>
               <TabList>
-                <Tab>Science</Tab>
-                <Tab>Attendance</Tab>
+                <Tab>
+                  <Text fontSize={{ base: "sm", md: "md", lg: "lg" }}>
+                    Science
+                  </Text>
+                </Tab>
+                <Tab>
+                  {" "}
+                  <Text fontSize={{ base: "sm", md: "md", lg: "lg" }}>
+                    Attendance
+                  </Text>
+                </Tab>
               </TabList>
               <TabPanels>
                 <TabPanel>
+                  {/* mt="-10" */}
+                  {/* Graphs */}
                   <Flex
-                    justify="space-between"
-                    mt="-10"
-                    // height='60vh'
-                  >
+                    justify="space-around"
+                    // mx={100}
+                    direction={{ base: "column", lg: "row" }}>
+                    {/* Two circles */}
                     <Flex
                       justify="center"
                       align="center"
-                      direction="column"
+                      direction={{ base: "row", lg: "column" }}
+                      // w="50%"
                       gap={10}
-                      w="50%">
+                      pb={{ base: 10, lg: 0 }}>
                       <div>
                         <CircularProgress
                           value={transmutedGrade}
-                          size={200}
+                          size={{ base: 90, sm: 120, md: 150, lg: 200 }}
                           thickness={8}>
                           <CircularProgressLabel>
-                            {transmutedGrade}
+                            <Text fontSize={{ base: "lg", lg: "4xl" }}>
+                              {transmutedGrade}
+                            </Text>
                           </CircularProgressLabel>
                         </CircularProgress>
                         <Flex direction="column" align="center">
-                          <Text>Remarks:</Text>
-                          <Text fontSize="xl" as="b">
+                          <Text fontSize={{ base: "md", lg: "xl" }}>
+                            Remarks:
+                          </Text>
+                          <Text
+                            fontSize={{ base: "md", md: "lg", lg: "2xl" }}
+                            as="b">
                             {remarks_descrip}
                           </Text>
                         </Flex>
@@ -335,7 +359,10 @@ const Post = ({
                       <div>
                         <CircularProgress
                           value={initialGrade * 100}
-                          size={100}
+                          // size={{ base: 90, sm: 120, md: 150, lg: 200 }}
+
+                          size={{ base: 50, sm: 65, md: 90, lg: 100 }}
+                          // size={{ base: 90, lg: 100 }}
                           thickness={8}
                           color="yellow.300">
                           <CircularProgressLabel>
@@ -343,28 +370,32 @@ const Post = ({
                           </CircularProgressLabel>
                         </CircularProgress>
                         <Flex direction="column" align="center">
-                          <Text>Initial Grade</Text>
+                          <Text fontSize={{ base: "md", lg: "xl" }}>
+                            Initial Grade
+                          </Text>
                         </Flex>
                       </div>
                     </Flex>
                     <Flex
                       justify="center"
                       align="center"
-                      w="50%"
+                      // w="50%"
                       direction="column">
-                      <Text fontSize="2xl" as="b">
+                      <Text fontSize={{ base: "xl", lg: "2xl" }} as="b">
                         Transmutation Table
                       </Text>
                       <Image
                         src="/transmutation-table"
-                        alt="table"
+                        alt="transmutation table"
                         objectFit="cover"
-                        h="70%"></Image>
+                        w={{ base: "70%", lg: "90%" }}></Image>
                     </Flex>
                   </Flex>
                   <Flex justify="flex-end">
                     <Button
                       // colorScheme='blue'
+                      size={{ base: "sm", md: "md", lg: "lg" }}
+                      fontSize={{ base: "xs", md: "md", lg: "lg" }}
                       bg="blue.600"
                       color="white"
                       my={5}
@@ -376,22 +407,39 @@ const Post = ({
                   {showBreakdown ? (
                     <Tabs
                       align="center"
-                      variant="soft-rounded"
+                      variant={"soft-rounded"}
+                      // w="100%"
                       colorScheme="blue">
                       {/* <Flex align="center" justify="center"> */}
                       <TabList mb={3}>
-                        <Tab>Written Works</Tab>
-                        <Tab>Performance Tasks</Tab>
-                        <Tab>Quarterly Assessment</Tab>
+                        <Tab>
+                          <Text fontSize={{ base: "xs", md: "md", lg: "lg" }}>
+                            Written Works
+                          </Text>
+                        </Tab>
+                        <Tab>
+                          <Text fontSize={{ base: "xs", md: "md", lg: "lg" }}>
+                            Performance Tasks
+                          </Text>
+                        </Tab>
+                        <Tab>
+                          <Text fontSize={{ base: "xs", md: "md", lg: "lg" }}>
+                            Quarterly Assessment
+                          </Text>
+                        </Tab>
                       </TabList>
                       <TabPanels>
                         <TabPanel>
                           {/* Written Works  */}
                           <TableContainer>
-                            <Text as="b" fontSize="xl">
+                            <Text
+                              as="b"
+                              fontSize={{ base: "md", md: "lg", lg: "xl" }}>
                               Written Works (40%)
                             </Text>
-                            <Table variant="simple">
+                            <Table
+                              variant="simple"
+                              size={{ base: "sm", md: "md", lg: "lg" }}>
                               <Thead>
                                 <Tr>
                                   <Th></Th>
@@ -466,10 +514,14 @@ const Post = ({
                         <TabPanel>
                           {/* Performance Tasks  */}
                           <TableContainer>
-                            <Text as="b" fontSize="xl">
+                            <Text
+                              as="b"
+                              fontSize={{ base: "md", md: "lg", lg: "xl" }}>
                               Performance Tasks (40%)
                             </Text>
-                            <Table variant="simple">
+                            <Table
+                              variant="simple"
+                              size={{ base: "sm", md: "md", lg: "lg" }}>
                               <Thead>
                                 <Tr>
                                   <Th></Th>
@@ -544,10 +596,14 @@ const Post = ({
                         <TabPanel>
                           {/* Quarterly Assessment  */}
                           <TableContainer>
-                            <Text as="b" fontSize="xl">
+                            <Text
+                              as="b"
+                              fontSize={{ base: "md", md: "lg", lg: "xl" }}>
                               Quarterly Assessment (20%)
                             </Text>
-                            <Table variant="simple">
+                            <Table
+                              variant="simple"
+                              size={{ base: "sm", md: "md", lg: "lg" }}>
                               <Thead>
                                 <Tr>
                                   <Th></Th>
