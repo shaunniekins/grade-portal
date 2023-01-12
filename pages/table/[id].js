@@ -3,7 +3,7 @@ import Head from "next/head";
 import { React } from "react";
 import { useState } from "react";
 import Layout from "../../components/Layout";
-import { useAuth } from "../useAuth";
+import { useAuth } from "../api/useAuth";
 import {
   Box,
   Button,
