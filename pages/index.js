@@ -80,41 +80,14 @@ export default function Home({ user, pass }) {
     if (userExists == true && pass[count] == formData.password) {
       //authenticated
       localStorage.setItem("isAuthenticated", "true");
-      router.push(`/table/${count + 12}`);
+      router.push(`/${count + 12}`);
     } else {
       setError("Invalid username or password");
       alert("Incorrect username or password");
       console.log("Data retrieved pass:" + pass[count]);
       console.log("Form data pass:" + formData.password);
     }
-
-    // if (formData.username == user && formData.password == pass) {
-    //   // authenticated
-    //   // Router.push("/secret");
-    //   Router.push(`/table/${count + 12}`);
-    // } else {
-    //   setError("Invalid email or password");
-    // }
   };
-
-  // const handleSubmit = (values, { setSubmitting }, e) => {
-  //   let userExists = false;
-  //   let count = 0;
-  //   user.forEach(function (value, i) {
-  //     if (value == values.username) {
-  //       count = i;
-  //       userExists = true;
-  //     }
-  //   });
-  //   userExists && pass[count] == values.password
-  //     ? setTimeout(() => {
-  //         e.preventDefault();
-  //         Cookies.set("loggedin", true);
-  //         router.push(`/table/${count + 12}`);
-  //         setSubmitting(false);
-  //       }, 100)
-  //     : alert("Incorrect username or password");
-  // };
 
   return (
     <>

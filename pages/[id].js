@@ -2,8 +2,8 @@ import { google } from "googleapis";
 import Head from "next/head";
 import { React } from "react";
 import { useState } from "react";
-import Layout from "../../components/Layout";
-import { useAuth } from "../api/useAuth";
+import Layout from "../components/Layout";
+import { useAuth } from "./api/useAuth";
 import {
   Box,
   Button,
