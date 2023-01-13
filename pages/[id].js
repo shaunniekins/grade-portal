@@ -511,6 +511,9 @@ const Post = ({
     "December",
   ];
 
+  // const dt = new Date();
+  // const day
+
   return (
     <>
       <Flex>
@@ -940,7 +943,7 @@ const Post = ({
                     <Flex justify={{ base: "center", md: "flex-end" }}>
                       <Select
                         mb={"5rem"}
-                        w={"20%"}
+                        w={{ base: "100%", md: "20%" }}
                         onChange={handleChange}
                         fontSize={{ base: "xs", md: "md", lg: "xl" }}
                         placeholder="-- Select Option --">
