@@ -5,6 +5,16 @@ import { useState } from "react";
 import Layout from "../components/Layout";
 import { useAuth } from "./api/useAuth";
 import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuOptionGroup,
+  MenuDivider,
+} from "@chakra-ui/react";
+import {
   Box,
   Button,
   Divider,
@@ -93,43 +103,85 @@ export async function getServerSideProps({ query }) {
     range: `SCIENCE Q1!B${id}`,
   });
 
-  //Attendance
+  //ATTENDANCE
+  //SUMMARY
+  const minusId = id - 6;
+  const responseSummary = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `SUMMARY!C${minusId}:F${minusId}`,
+  });
 
-  const dates = [
-    "Total Summary",
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  //JANUARY
+  const responseJanAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `JANUARY!C${minusId}:F${minusId}`,
+  });
 
-  // const responseAttendancePresent = await sheets.spreadsheets.values.get({
-  //   spreadsheetId: process.env.SHEET_ID,
-  //   range: `SUMMARY Q1!C${id}`,
-  // });
+  //FEBRUARY
+  const responseFebAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `FEBRUARY!C${minusId}:F${minusId}`,
+  });
 
-  // const responseAttendanceLate = await sheets.spreadsheets.values.get({
-  //   spreadsheetId: process.env.SHEET_ID,
-  //   range: `SUMMARY Q1!D${id}`,
-  // });
+  //MARCH
+  const responseMarAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `MARCH!C${minusId}:F${minusId}`,
+  });
 
-  // const responseAttendanceExcused = await sheets.spreadsheets.values.get({
-  //   spreadsheetId: process.env.SHEET_ID,
-  //   range: `SUMMARY Q1!E${id}`,
-  // });
+  //APRIL
+  const responseAprAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `APRIL!C${minusId}:F${minusId}`,
+  });
 
-  // const responseAttendanceUnexcused = await sheets.spreadsheets.values.get({
-  //   spreadsheetId: process.env.SHEET_ID,
-  //   range: `SCIENCE Q1!F${id}`,
-  // });
+  //MAY
+  const responseMayAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `MAY!C${minusId}:F${minusId}`,
+  });
+
+  //JUNE
+  const responseJuneAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `JUNE!C${minusId}:F${minusId}`,
+  });
+
+  //JULY
+  const responseJulyAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `JULY!C${minusId}:F${minusId}`,
+  });
+
+  //AUGUST
+  const responseAugAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `AUGUST!C${minusId}:F${minusId}`,
+  });
+
+  //SEPTEMBER
+  const responseSeptAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `SEPTEMBER!C${minusId}:F${minusId}`,
+  });
+
+  //OCTOBER
+  const responseOctAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `OCTOBER!C${minusId}:F${minusId}`,
+  });
+
+  //NOVEMBER
+  const responseNovAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `NOVEMBER!C${minusId}:F${minusId}`,
+  });
+
+  //DECEMBER
+  const responseDecAttendance = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `DECEMBER!C${minusId}:F${minusId}`,
+  });
 
   //Result
   const max_written_works = [];
@@ -158,6 +210,58 @@ export async function getServerSideProps({ query }) {
   responseName.data.values.forEach((value) => nameVal.push(value));
   responseUsername.data.values.forEach((value) => userNameVal.push(value));
 
+  const attendanceSummary = [];
+  const attendanceJan = [];
+  const attendanceFeb = [];
+  const attendanceMarch = [];
+  const attendanceApril = [];
+  const attendanceMay = [];
+  const attendanceJune = [];
+  const attendanceJuly = [];
+  const attendanceAug = [];
+  const attendanceSept = [];
+  const attendanceOct = [];
+  const attendanceNov = [];
+  const attendanceDec = [];
+
+  responseSummary.data.values.forEach((value) => attendanceSummary.push(value));
+  responseJanAttendance.data.values.forEach((value) =>
+    attendanceJan.push(value)
+  );
+  responseFebAttendance.data.values.forEach((value) =>
+    attendanceFeb.push(value)
+  );
+  responseMarAttendance.data.values.forEach((value) =>
+    attendanceMarch.push(value)
+  );
+  responseAprAttendance.data.values.forEach((value) =>
+    attendanceApril.push(value)
+  );
+  responseMayAttendance.data.values.forEach((value) =>
+    attendanceMay.push(value)
+  );
+  responseJuneAttendance.data.values.forEach((value) =>
+    attendanceJune.push(value)
+  );
+  responseJulyAttendance.data.values.forEach((value) =>
+    attendanceJuly.push(value)
+  );
+  responseAugAttendance.data.values.forEach((value) =>
+    attendanceAug.push(value)
+  );
+  responseSeptAttendance.data.values.forEach((value) =>
+    attendanceSept.push(value)
+  );
+  responseOctAttendance.data.values.forEach((value) =>
+    attendanceOct.push(value)
+  );
+  responseNovAttendance.data.values.forEach((value) =>
+    attendanceNov.push(value)
+  );
+  responseDecAttendance.data.values.forEach((value) =>
+    attendanceDec.push(value)
+  );
+
   return {
     props: {
       id,
@@ -169,6 +273,20 @@ export async function getServerSideProps({ query }) {
       quarterly_assessment,
       nameVal,
       userNameVal,
+      attendanceSummary,
+      attendanceJan,
+      attendanceFeb,
+      attendanceMarch,
+      attendanceApril,
+      attendanceMay,
+      attendanceJune,
+      attendanceJuly,
+      attendanceAug,
+      attendanceSept,
+      attendanceOct,
+      attendanceNov,
+      attendanceDec,
+      minusId,
     },
   };
 }
@@ -183,9 +301,24 @@ const Post = ({
   quarterly_assessment,
   nameVal,
   userNameVal,
+  attendanceSummary,
+  attendanceJan,
+  attendanceFeb,
+  attendanceMarch,
+  attendanceApril,
+  attendanceMay,
+  attendanceJune,
+  attendanceJuly,
+  attendanceAug,
+  attendanceSept,
+  attendanceOct,
+  attendanceNov,
+  attendanceDec,
+  minusId,
 }) => {
   useAuth();
   const router = useRouter();
+  // console.log(attendanceSummary[0][0]);
   const [showBreakdown, setShowBreakdown] = useState(false);
 
   const handleClick = (e) => {
@@ -195,10 +328,55 @@ const Post = ({
     // router.push(`/`);
   };
 
-  const [selectedValue, setSelectedValue] = useState("Total Summary");
+  let [display, setDisplay] = useState(attendanceSummary);
+
+  let toDisplayAttendance = attendanceSummary;
 
   function handleChange(event) {
-    setSelectedValue(event.target.value);
+    // setSelectedValue(event.target.value);
+    const selectedOption = event.target.value;
+    switch (selectedOption) {
+      case "January":
+        setDisplay(attendanceJan);
+        console.log("Jan");
+        break;
+      case "February":
+        setDisplay(attendanceFeb);
+        console.log("Feb");
+        break;
+      case "March":
+        setDisplay(attendanceMarch);
+        break;
+      case "April":
+        setDisplay(attendanceApril);
+        break;
+      case "May":
+        setDisplay(attendanceMay);
+        break;
+      case "June":
+        setDisplay(attendanceJune);
+        break;
+      case "July":
+        setDisplay(attendanceJuly);
+        break;
+      case "August":
+        setDisplay(attendanceAug);
+        break;
+      case "September":
+        setDisplay(attendanceSept);
+        break;
+      case "October":
+        setDisplay(attendanceOct);
+        break;
+      case "November":
+        setDisplay(attendanceNov);
+        break;
+      case "December":
+        setDisplay(attendanceDec);
+        break;
+      default:
+        setDisplay(attendanceSummary);
+    }
   }
 
   let buttonText;
@@ -754,34 +932,53 @@ const Post = ({
                   )}
                 </TabPanel>
                 <TabPanel>
-                  <Select
-                    onChange={handleChange}
-                    placeholder="-- Select Option --">
-                    {/* {console.log(selectedValue)} */}
-                    {dates.map((date) => (
-                      <option key={date.toString()} value={date}>
-                        {date}
-                      </option>
-                    ))}
-                  </Select>
-                  <Text>{selectedValue}</Text>
-                  <TableContainer>
-                    <Table
-                      variant={"simple"}
-                      size={{ base: "sm", md: "md", lg: "lg" }}>
-                      <Thead>
-                        <Tr>
-                          <Th>PRESENT</Th>
-                          <Th>LATE</Th>
-                          <Th>EXCUSED ABSENCE</Th>
-                          <Th>UNEXCUSED ABSENCE</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        <Tr>{/* <Td>yow</Td> */}</Tr>
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
+                  <Flex
+                    // h={"60vh"}
+                    direction={"column"}
+                    justify={"center"}
+                    my={"50px"}>
+                    <Flex justify={{ base: "center", md: "flex-end" }}>
+                      <Select
+                        mb={"5rem"}
+                        w={"20%"}
+                        onChange={handleChange}
+                        fontSize={{ base: "xs", md: "md", lg: "xl" }}
+                        placeholder="-- Select Option --">
+                        {dates.map((date) => (
+                          <option key={date.toString()} value={date}>
+                            {date}
+                          </option>
+                        ))}
+                      </Select>
+                    </Flex>
+
+                    <Flex w={"100%"} align={"center"} justify={"center"}>
+                      <TableContainer>
+                        <Table
+                          variant={"simple"}
+                          // h="100vh"
+                          size={{ base: "sm", md: "md", lg: "lg" }}>
+                          <Thead>
+                            <Tr>
+                              <Th w={"250px"}>PRESENT</Th>
+                              <Th w={"250px"}>LATE</Th>
+                              <Th w={"250px"}>EXCUSED ABSENCE</Th>
+                              <Th w={"250px"}>UNEXCUSED ABSENCE</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody>
+                            {display.map((month) => (
+                              <Tr>
+                                {month.map((mon) => (
+                                  <Td>{mon}</Td>
+                                ))}
+                              </Tr>
+                            ))}
+                          </Tbody>
+                        </Table>
+                      </TableContainer>
+                    </Flex>
+                  </Flex>
                 </TabPanel>
               </TabPanels>
             </Tabs>
