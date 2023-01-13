@@ -10,6 +10,7 @@ import {
   Divider,
   Image,
   Flex,
+  Select,
   Tabs,
   TabList,
   TabPanels,
@@ -30,13 +31,21 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import keys from "../secrets.json";
 
 export async function getServerSideProps({ query }) {
-  //Auth
-  const auth = await google.auth.getClient({
-    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
-  });
-  const sheets = google.sheets({ version: "v4", auth });
+  const client = new google.auth.JWT(
+    keys.client_email,
+    null,
+    keys.private_key,
+    ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+  );
+  // //Auth
+  // const auth = await google.auth.getClient({
+  //   scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+  // });
+  // const sheets = google.sheets({ version: "v4", auth });
+  const sheets = google.sheets({ version: "v4", auth: client });
 
   //Query
   const { id } = query;
@@ -83,6 +92,44 @@ export async function getServerSideProps({ query }) {
     spreadsheetId: process.env.SHEET_ID,
     range: `SCIENCE Q1!B${id}`,
   });
+
+  //Attendance
+
+  const dates = [
+    "Total Summary",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  // const responseAttendancePresent = await sheets.spreadsheets.values.get({
+  //   spreadsheetId: process.env.SHEET_ID,
+  //   range: `SUMMARY Q1!C${id}`,
+  // });
+
+  // const responseAttendanceLate = await sheets.spreadsheets.values.get({
+  //   spreadsheetId: process.env.SHEET_ID,
+  //   range: `SUMMARY Q1!D${id}`,
+  // });
+
+  // const responseAttendanceExcused = await sheets.spreadsheets.values.get({
+  //   spreadsheetId: process.env.SHEET_ID,
+  //   range: `SUMMARY Q1!E${id}`,
+  // });
+
+  // const responseAttendanceUnexcused = await sheets.spreadsheets.values.get({
+  //   spreadsheetId: process.env.SHEET_ID,
+  //   range: `SCIENCE Q1!F${id}`,
+  // });
 
   //Result
   const max_written_works = [];
@@ -138,17 +185,23 @@ const Post = ({
   userNameVal,
 }) => {
   useAuth();
-  const [showBreakdown, setShowBreakdown] = useState(false);
   const router = useRouter();
+  const [showBreakdown, setShowBreakdown] = useState(false);
 
   const handleClick = (e) => {
     e.preventDefault();
     localStorage.setItem("isAuthenticated", false);
-    router.push(`/`);
+    router.push(`https://grade-portal.vercel.app/`);
+    // router.push(`/`);
   };
 
-  let buttonText,
-    iterate = 0;
+  const [selectedValue, setSelectedValue] = useState("Total Summary");
+
+  function handleChange(event) {
+    setSelectedValue(event.target.value);
+  }
+
+  let buttonText;
 
   let sumMaxWrittenScore,
     sumMaxPerformanceScore,
@@ -261,6 +314,22 @@ const Post = ({
   showBreakdown
     ? (buttonText = "Hide Breakdown")
     : (buttonText = "Show Breakdown");
+
+  const dates = [
+    "Total Summary",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   return (
     <>
@@ -461,9 +530,7 @@ const Post = ({
                                   <Tr>
                                     <Th>Max Score</Th>
                                     {row.map((col) => (
-                                      <Td key={`max_${col}_${iterate++}`}>
-                                        {col}
-                                      </Td>
+                                      <Td key={col.toString()}>{col}</Td>
                                     ))}
                                     <Td isNumeric>{sumMaxWrittenScore}</Td>
                                   </Tr>
@@ -472,9 +539,7 @@ const Post = ({
                                   <Tr>
                                     <Th>Your Score</Th>
                                     {row.map((col) => (
-                                      <Td key={`max_${col}_${iterate++}`}>
-                                        {col}
-                                      </Td>
+                                      <Td key={col.toString()}>{col}</Td>
                                     ))}
                                     <Td isNumeric>{sumYourWrittenScore}</Td>
                                   </Tr>
@@ -543,9 +608,7 @@ const Post = ({
                                   <Tr>
                                     <Th>Max Score</Th>
                                     {row.map((col) => (
-                                      <Td key={`max_${col}_${iterate++}`}>
-                                        {col}
-                                      </Td>
+                                      <Td key={col.toString()}>{col}</Td>
                                     ))}
                                     <Td isNumeric>{sumMaxPerformanceScore}</Td>
                                   </Tr>
@@ -554,9 +617,7 @@ const Post = ({
                                   <Tr>
                                     <Th>Your Score</Th>
                                     {row.map((col) => (
-                                      <Td key={`max_${col}_${iterate++}`}>
-                                        {col}
-                                      </Td>
+                                      <Td key={col.toString()}>{col}</Td>
                                     ))}
                                     <Td isNumeric>{sumYourPerformanceScore}</Td>
                                   </Tr>
@@ -691,7 +752,34 @@ const Post = ({
                   )}
                 </TabPanel>
                 <TabPanel>
-                  <p>-- No data found --</p>
+                  <Select
+                    onChange={handleChange}
+                    placeholder="-- Select Option --">
+                    {/* {console.log(selectedValue)} */}
+                    {dates.map((date) => (
+                      <option key={date.toString()} value={date}>
+                        {date}
+                      </option>
+                    ))}
+                  </Select>
+                  <Text>{selectedValue}</Text>
+                  <TableContainer>
+                    <Table
+                      variant={"simple"}
+                      size={{ base: "sm", md: "md", lg: "lg" }}>
+                      <Thead>
+                        <Tr>
+                          <Th>PRESENT</Th>
+                          <Th>LATE</Th>
+                          <Th>EXCUSED ABSENCE</Th>
+                          <Th>UNEXCUSED ABSENCE</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        <Tr>{/* <Td>yow</Td> */}</Tr>
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
                 </TabPanel>
               </TabPanels>
             </Tabs>

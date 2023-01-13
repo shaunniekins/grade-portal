@@ -12,6 +12,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import keys from "../secrets.json";
 
 import { Formik, Field } from "formik";
 import React from "react";
@@ -19,11 +20,18 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 export async function getServerSideProps() {
+  const client = new google.auth.JWT(
+    keys.client_email,
+    null,
+    keys.private_key,
+    ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+  );
+
   //Auth
-  const auth = await google.auth.getClient({
-    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
-  });
-  const sheets = google.sheets({ version: "v4", auth });
+  // const auth = await google.auth.getClient({
+  //   scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+  // });
+  const sheets = google.sheets({ version: "v4", auth: client });
 
   //Query
   const responseUser = await sheets.spreadsheets.values.get({

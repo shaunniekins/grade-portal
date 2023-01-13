@@ -4,7 +4,7 @@ import Router from "next/router";
 export const useAuth = () => {
   useEffect(() => {
     if (localStorage.getItem("isAuthenticated") !== "true") {
-      Router.push("/");
+      Router.push("https://grade-portal.vercel.app/");
     }
   }, []);
 };
