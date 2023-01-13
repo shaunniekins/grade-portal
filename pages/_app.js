@@ -4,8 +4,6 @@ import Router from "next/router";
 import { useState } from "react";
 import NProgress from "nprogress";
 
-import Loader from "../components/Loader";
-
 export default function App({ Component, pageProps }) {
   const [loading, setLoading] = useState(false);
   Router.events.on("routeChangeStart", (url) => {
@@ -27,7 +25,7 @@ export default function App({ Component, pageProps }) {
           referrerPolicy="no-referrer"
         />
       </Head>
-      {loading && <Loader />}
+      {loading}
       <ChakraProvider>
         <Component {...pageProps} />
       </ChakraProvider>
