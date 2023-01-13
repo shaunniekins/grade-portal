@@ -230,7 +230,7 @@ const Post = ({
 
   percentageWrittenScore = (
     (sumYourWrittenScore / sumMaxWrittenScore) *
-    1
+    100
   ).toFixed(3);
   weightedWrittenScore = (percentageWrittenScore * 0.4).toFixed(3);
 
@@ -245,7 +245,7 @@ const Post = ({
 
   percentagePerformanceScore = (
     (sumYourPerformanceScore / sumMaxPerformanceScore) *
-    1
+    100
   ).toFixed(3);
   weightedPerformanceScore = (percentagePerformanceScore * 0.4).toFixed(3);
 
@@ -260,7 +260,7 @@ const Post = ({
 
   percentageQuarterlyScore = (
     (sumYourQuarterlyScore / sumMaxQuarterlyScore) *
-    1
+    100
   ).toFixed(3);
   weightedQuarterlyScore = (percentageQuarterlyScore * 0.2).toFixed(3);
 
@@ -268,7 +268,7 @@ const Post = ({
     parseFloat(weightedPerformanceScore) +
     parseFloat(weightedWrittenScore) +
     parseFloat(weightedQuarterlyScore)
-  ).toFixed(3);
+  ).toFixed(2);
 
   let lowestInitialGrade;
   let temp;
@@ -299,7 +299,9 @@ const Post = ({
       }
     }
   };
-  transmutedGrade = toTransmuted(initialGrade * 100);
+  // console.log(initialGrade);
+
+  transmutedGrade = toTransmuted(initialGrade);
 
   if (transmutedGrade >= 90 && transmutedGrade <= 100)
     remarks_descrip = "Outstanding";
@@ -427,7 +429,7 @@ const Post = ({
                       </div>
                       <div>
                         <CircularProgress
-                          value={initialGrade * 100}
+                          value={initialGrade}
                           // size={{ base: 90, sm: 120, md: 150, lg: 200 }}
 
                           size={{ base: 50, sm: 65, md: 90, lg: 100 }}
@@ -435,7 +437,7 @@ const Post = ({
                           thickness={8}
                           color="yellow.300">
                           <CircularProgressLabel>
-                            {(initialGrade * 100).toFixed(1)}
+                            {initialGrade}
                           </CircularProgressLabel>
                         </CircularProgress>
                         <Flex direction="column" align="center">
@@ -548,10 +550,10 @@ const Post = ({
                                   <Th>Percentage Score</Th>
                                   <Td colSpan={11}>
                                     <div align="center">
-                                      <Text>{`(Total Max Score / Total Your Score) * 100%`}</Text>
+                                      <Text>{`(Total Max Score / Total Your Score) * 100`}</Text>
                                       <br />
                                       <Text>
-                                        {`= (${sumYourWrittenScore} / ${sumMaxWrittenScore}) * 100%`}
+                                        {`= (${sumYourWrittenScore} / ${sumMaxWrittenScore}) * 100`}
                                       </Text>
                                       <br />
                                       <Text as="b">{`= ${percentageWrittenScore}`}</Text>
@@ -626,10 +628,10 @@ const Post = ({
                                   <Th>Percentage Score</Th>
                                   <Td colSpan={11}>
                                     <div align="center">
-                                      <Text>{`(Total Max Score / Total Your Score) * 100%`}</Text>
+                                      <Text>{`(Total Max Score / Total Your Score) * 100`}</Text>
                                       <br />
                                       <Text>
-                                        {`= (${sumYourPerformanceScore} / ${sumMaxPerformanceScore}) * 100%`}
+                                        {`= (${sumYourPerformanceScore} / ${sumMaxPerformanceScore}) * 100`}
                                       </Text>
                                       <br />
                                       <Text as="b">{`= ${percentagePerformanceScore}`}</Text>
@@ -717,10 +719,10 @@ const Post = ({
                                   <Th>Percentage Score</Th>
                                   <Td colSpan={11}>
                                     <div align="center">
-                                      <Text>{`(Total Max Score / Total Your Score) * 100%`}</Text>
+                                      <Text>{`(Total Max Score / Total Your Score) * 100`}</Text>
                                       <br />
                                       <Text>
-                                        {`= (${sumYourQuarterlyScore} / ${sumMaxQuarterlyScore}) * 100%`}
+                                        {`= (${sumYourQuarterlyScore} / ${sumMaxQuarterlyScore}) * 100`}
                                       </Text>
                                       <br />
                                       <Text as="b">{`= ${percentageQuarterlyScore}`}</Text>
