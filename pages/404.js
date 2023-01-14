@@ -1,5 +1,4 @@
-import { Text, Flex } from "@chakra-ui/react";
-import { Link } from "@chakra-ui/react";
+import { Text, Flex, Link } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
@@ -8,7 +7,7 @@ const NotFound = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      router.push("/");
+      router.push("https://grade-portal.vercel.app/");
     }, 2500);
   }, []);
 
