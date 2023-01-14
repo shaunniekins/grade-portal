@@ -5,7 +5,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-
-require("next-env")();
-const dotenvLoad = require("dotenv-load");
-dotenvLoad();
