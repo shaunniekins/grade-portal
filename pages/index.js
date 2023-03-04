@@ -1,4 +1,5 @@
 import Head from "next/head";
+import keys from "../secrets.json";
 import { google } from "googleapis";
 import {
   Button,
@@ -7,17 +8,13 @@ import {
   CardBody,
   Flex,
   FormControl,
-  FormErrorMessage,
   Input,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import keys from "../secrets.json";
-
 import { Formik, Field } from "formik";
-import React from "react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, React } from "react";
 
 export async function getServerSideProps() {
   //Auth
@@ -59,12 +56,9 @@ export default function Home({ user, pass }) {
 
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
-  // console.log("hello");
 
   const handleSubmit = (e) => {
-    // console.log("visited here");
     e.preventDefault();
-    // localStorage.setItem("isAuthenticated", false);
 
     let userExists = false;
     let count = 0;
@@ -73,11 +67,6 @@ export default function Home({ user, pass }) {
       if (formData.username == userV[0]) {
         count = i;
         userExists = true;
-        console.log("Data retrived username: " + userV[0]);
-        console.log("Form data username: " + formData.username);
-        // console.log(userExists);
-        console.log(count);
-        // i++;
       }
     });
 
@@ -88,8 +77,6 @@ export default function Home({ user, pass }) {
     } else {
       setError("Invalid username or password");
       alert("Incorrect username or password");
-      console.log("Data retrieved pass:" + pass[count]);
-      console.log("Form data pass:" + formData.password);
     }
   };
 
@@ -132,7 +119,6 @@ export default function Home({ user, pass }) {
                     />
                   </FormControl>
                   <FormControl>
-                    {/* isInvalid={!!errors.password && touched.password}> */}
                     <Field
                       as={Input}
                       id="password"
@@ -145,13 +131,7 @@ export default function Home({ user, pass }) {
                       onChange={(e) =>
                         setFormData({ ...formData, password: e.target.value })
                       }
-                      // validate={(value) => {
-                      //   if (value.length <= 6) {
-                      //     return "Password should be over 6 characters";
-                      //   }
-                      // }}
                     />
-                    {/* <FormErrorMessage>{errors.password}</FormErrorMessage> */}
                   </FormControl>
                   <Button
                     type="submit"
