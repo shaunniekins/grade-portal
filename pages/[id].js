@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import Breakdown from "../components/Breakdown";
 import UserLogin from "../components/UserLogin";
-import { getRemarks } from "../pages/tools/msgCreate";
+import { getRemarks } from "./tools/remarks";
 import { getGoogleSheetsClient } from "../pages/api/googleSheetsClient";
 
 export async function getServerSideProps({ query }) {
@@ -98,26 +98,8 @@ const Post = (props) => {
   const handleClick = (e) => {
     e.preventDefault();
     sessionStorage.setItem("isAuthenticated", false);
-    router.push("/");
+    router.push("https://grade-portal.vercel.app/");
   };
-
-  function handleChange(event) {
-    const selectedOption = event.target.value;
-    const monthIndex = {
-      January: 1,
-      February: 2,
-      March: 3,
-      April: 4,
-      May: 5,
-      June: 6,
-      July: 7,
-      August: 8,
-      September: 9,
-      October: 10,
-      November: 11,
-      December: 12,
-    }[selectedOption];
-  }
 
   // Helper functions
   const sumArray = (arr) => arr.reduce((a, b) => parseInt(a) + parseInt(b));
@@ -199,7 +181,7 @@ const Post = (props) => {
     ...Array.from({ length: 10 }, (_, i) => (i + 1).toString()),
   ];
 
-  // Labels for different types of assessments
+  // Labels for different types of assessments: Used to change the 'name' with screen resolution
   const writtenWorksLabel = useBreakpointValue({
     base: "Written",
     md: "Written Works",
