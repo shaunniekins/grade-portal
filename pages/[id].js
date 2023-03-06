@@ -1,251 +1,102 @@
 import Head from "next/head";
-import { google } from "googleapis";
 import { React, useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "./api/useAuth";
-import keys from "../secrets.json";
 import Layout from "../components/Layout";
 import T_Table from "../components/TransmutationTable";
 import {
-  Box,
   Button,
-  Divider,
-  Image,
   Flex,
-  Select,
   Tabs,
   TabList,
   TabPanels,
   Tab,
   TabPanel,
-  Table,
   Text,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Stack,
-  VStack,
   CircularProgress,
   CircularProgressLabel,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import Attendance from "../components/AttendanceTab";
+import Breakdown from "../components/Breakdown";
+import UserLogin from "../components/UserLogin";
+import { getRemarks } from "../pages/tools/msgCreate";
+import { getGoogleSheetsClient } from "../pages/api/googleSheetsClient";
 
 export async function getServerSideProps({ query }) {
-  const client = new google.auth.JWT(
-    keys.client_email,
-    null,
-    keys.private_key,
-    ["https://www.googleapis.com/auth/spreadsheets.readonly"]
-  );
-  const sheets = google.sheets({ version: "v4", auth: client });
+  const googleSheetsClient = await getGoogleSheetsClient();
 
   //Query
   const { id } = query;
+  const sheetName = "SCIENCE Q1";
 
   //Highest Possible Score
-  const max_row = 10;
-  const responseMaxWritten = await sheets.spreadsheets.values.get({
+  const row = 10;
+  const responseMax = await googleSheetsClient.spreadsheets.values.batchGet({
     spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!H${max_row}:Q${max_row}`,
-  });
-  console.log(`SCIENCE Q1!H${max_row}:Q${max_row}`);
-  const responseMaxPerform = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!U${max_row}:AD${max_row}`,
+    ranges: [
+      `${sheetName}!H${row}:Q${row}`,
+      `${sheetName}!U${row}:AD${row}`,
+      `${sheetName}!AH${row}`,
+    ],
   });
 
-  const responseMaxAssess = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!AH${max_row}`,
-  });
+  //HPS Result
+  const max_written_works = responseMax.data.valueRanges[0].values;
+  const max_performance_tasks = responseMax.data.valueRanges[1].values;
+  const max_quarterly_assessment = responseMax.data.valueRanges[2].values;
 
   //User
-  const responseWritten = await sheets.spreadsheets.values.get({
+  const responseWPANU = await googleSheetsClient.spreadsheets.values.batchGet({
     spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!H${id}:Q${id}`,
+    ranges: [
+      `${sheetName}!H${id}:Q${id}`,
+      `${sheetName}!U${id}:AD${id}`,
+      `${sheetName}!AH${id}`,
+      `${sheetName}!D${id}`,
+      `${sheetName}!B${id}`,
+    ],
   });
 
-  const responsePerform = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!U${id}:AD${id}`,
-  });
-
-  const responseAssess = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!AH${id}`,
-  });
-
-  const responseName = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!D${id}`,
-  });
-
-  const responseUsername = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!B${id}`,
-  });
+  //User Result
+  const written_works = responseWPANU.data.valueRanges[0].values;
+  const performance_tasks = responseWPANU.data.valueRanges[1].values;
+  const quarterly_assessment = responseWPANU.data.valueRanges[2].values;
+  const nameVal = responseWPANU.data.valueRanges[3].values;
+  const userNameVal = responseWPANU.data.valueRanges[4].values;
 
   //ATTENDANCE
-  //SUMMARY
   const minusId = id - 6;
-  const responseSummary = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `SUMMARY!C${minusId}:F${minusId}`,
-  });
 
-  //JANUARY
-  const responseJanAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `JANUARY!C${minusId}:F${minusId}`,
-  });
-
-  //FEBRUARY
-  const responseFebAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `FEBRUARY!C${minusId}:F${minusId}`,
-  });
-
-  //MARCH
-  const responseMarAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `MARCH!C${minusId}:F${minusId}`,
-  });
-
-  //APRIL
-  const responseAprAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `APRIL!C${minusId}:F${minusId}`,
-  });
-
-  //MAY
-  const responseMayAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `MAY!C${minusId}:F${minusId}`,
-  });
-
-  //JUNE
-  const responseJuneAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `JUNE!C${minusId}:F${minusId}`,
-  });
-
-  //JULY
-  const responseJulyAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `JULY!C${minusId}:F${minusId}`,
-  });
-
-  //AUGUST
-  const responseAugAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `AUGUST!C${minusId}:F${minusId}`,
-  });
-
-  //SEPTEMBER
-  const responseSeptAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `SEPTEMBER!C${minusId}:F${minusId}`,
-  });
-
-  //OCTOBER
-  const responseOctAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `OCTOBER!C${minusId}:F${minusId}`,
-  });
-
-  //NOVEMBER
-  const responseNovAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `NOVEMBER!C${minusId}:F${minusId}`,
-  });
-
-  //DECEMBER
-  const responseDecAttendance = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range: `DECEMBER!C${minusId}:F${minusId}`,
-  });
+  //MONTHS
+  const months = [
+    "SUMMARY",
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
+    "JUNE",
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER",
+  ];
 
   //Result
-  const max_written_works = [];
-  const max_performance_tasks = [];
-  const max_quarterly_assessment = [];
-  const written_works = [];
-  const performance_tasks = [];
-  const quarterly_assessment = [];
-  const nameVal = [];
-  const userNameVal = [];
+  const attendanceData = [];
 
-  responseMaxWritten.data.values.forEach((value) =>
-    max_written_works.push(value)
-  );
-  responseMaxPerform.data.values.forEach((value) =>
-    max_performance_tasks.push(value)
-  );
-  responseMaxAssess.data.values.forEach((value) =>
-    max_quarterly_assessment.push(value)
-  );
-  responseWritten.data.values.forEach((value) => written_works.push(value));
-  responsePerform.data.values.forEach((value) => performance_tasks.push(value));
-  responseAssess.data.values.forEach((value) =>
-    quarterly_assessment.push(value)
-  );
-  responseName.data.values.forEach((value) => nameVal.push(value));
-  responseUsername.data.values.forEach((value) => userNameVal.push(value));
-
-  const attendanceSummary = [];
-  const attendanceJan = [];
-  const attendanceFeb = [];
-  const attendanceMarch = [];
-  const attendanceApril = [];
-  const attendanceMay = [];
-  const attendanceJune = [];
-  const attendanceJuly = [];
-  const attendanceAug = [];
-  const attendanceSept = [];
-  const attendanceOct = [];
-  const attendanceNov = [];
-  const attendanceDec = [];
-
-  responseSummary.data.values.forEach((value) => attendanceSummary.push(value));
-  responseJanAttendance.data.values.forEach((value) =>
-    attendanceJan.push(value)
-  );
-  responseFebAttendance.data.values.forEach((value) =>
-    attendanceFeb.push(value)
-  );
-  responseMarAttendance.data.values.forEach((value) =>
-    attendanceMarch.push(value)
-  );
-  responseAprAttendance.data.values.forEach((value) =>
-    attendanceApril.push(value)
-  );
-  responseMayAttendance.data.values.forEach((value) =>
-    attendanceMay.push(value)
-  );
-  responseJuneAttendance.data.values.forEach((value) =>
-    attendanceJune.push(value)
-  );
-  responseJulyAttendance.data.values.forEach((value) =>
-    attendanceJuly.push(value)
-  );
-  responseAugAttendance.data.values.forEach((value) =>
-    attendanceAug.push(value)
-  );
-  responseSeptAttendance.data.values.forEach((value) =>
-    attendanceSept.push(value)
-  );
-  responseOctAttendance.data.values.forEach((value) =>
-    attendanceOct.push(value)
-  );
-  responseNovAttendance.data.values.forEach((value) =>
-    attendanceNov.push(value)
-  );
-  responseDecAttendance.data.values.forEach((value) =>
-    attendanceDec.push(value)
-  );
+  for (const month of months) {
+    const responseAttendance = await googleSheetsClient.spreadsheets.values.get(
+      {
+        spreadsheetId: process.env.SHEET_ID,
+        range: `${month}!C${minusId}:F${minusId}`,
+      }
+    );
+    attendanceData.push(responseAttendance.data.values);
+  }
 
   return {
     props: {
@@ -257,246 +108,153 @@ export async function getServerSideProps({ query }) {
       quarterly_assessment,
       nameVal,
       userNameVal,
-      attendanceSummary,
-      attendanceJan,
-      attendanceFeb,
-      attendanceMarch,
-      attendanceApril,
-      attendanceMay,
-      attendanceJune,
-      attendanceJuly,
-      attendanceAug,
-      attendanceSept,
-      attendanceOct,
-      attendanceNov,
-      attendanceDec,
+      months,
+      attendanceData,
       minusId,
     },
   };
 }
 
-const Post = ({
-  id,
-  max_written_works,
-  max_performance_tasks,
-  max_quarterly_assessment,
-  written_works,
-  performance_tasks,
-  quarterly_assessment,
-  nameVal,
-  userNameVal,
-  attendanceSummary,
-  attendanceJan,
-  attendanceFeb,
-  attendanceMarch,
-  attendanceApril,
-  attendanceMay,
-  attendanceJune,
-  attendanceJuly,
-  attendanceAug,
-  attendanceSept,
-  attendanceOct,
-  attendanceNov,
-  attendanceDec,
-  minusId,
-}) => {
+const Post = (props) => {
+  const {
+    id,
+    max_written_works,
+    max_performance_tasks,
+    max_quarterly_assessment,
+    written_works,
+    performance_tasks,
+    quarterly_assessment,
+    nameVal,
+    userNameVal,
+    months,
+    attendanceData,
+    minusId,
+  } = props;
+
   useAuth();
-  const router = useRouter();
+  const { query } = useRouter();
   const [showBreakdown, setShowBreakdown] = useState(false);
 
   const handleClick = (e) => {
     e.preventDefault();
-    localStorage.setItem("isAuthenticated", false);
-    router.push(`https://grade-portal.vercel.app/`);
+    sessionStorage.setItem("isAuthenticated", false);
+    router.push("/");
   };
 
-  let [display, setDisplay] = useState(attendanceSummary);
+  const [display, setDisplay] = useState(attendanceData[0]);
 
   function handleChange(event) {
     const selectedOption = event.target.value;
-    switch (selectedOption) {
-      case "January":
-        setDisplay(attendanceJan);
-        break;
-      case "February":
-        setDisplay(attendanceFeb);
-        break;
-      case "March":
-        setDisplay(attendanceMarch);
-        break;
-      case "April":
-        setDisplay(attendanceApril);
-        break;
-      case "May":
-        setDisplay(attendanceMay);
-        break;
-      case "June":
-        setDisplay(attendanceJune);
-        break;
-      case "July":
-        setDisplay(attendanceJuly);
-        break;
-      case "August":
-        setDisplay(attendanceAug);
-        break;
-      case "September":
-        setDisplay(attendanceSept);
-        break;
-      case "October":
-        setDisplay(attendanceOct);
-        break;
-      case "November":
-        setDisplay(attendanceNov);
-        break;
-      case "December":
-        setDisplay(attendanceDec);
-        break;
-      default:
-        setDisplay(attendanceSummary);
-    }
+    const monthIndex = {
+      January: 1,
+      February: 2,
+      March: 3,
+      April: 4,
+      May: 5,
+      June: 6,
+      July: 7,
+      August: 8,
+      September: 9,
+      October: 10,
+      November: 11,
+      December: 12,
+    }[selectedOption];
+
+    setDisplay(attendanceData[monthIndex] || attendanceData[0]);
   }
 
-  let sumMaxWrittenScore,
-    sumMaxPerformanceScore,
-    sumMaxQuarterlyScore,
-    sumYourWrittenScore,
-    sumYourPerformanceScore,
-    sumYourQuarterlyScore,
-    percentageWrittenScore,
-    percentagePerformanceScore,
-    percentageQuarterlyScore,
-    weightedWrittenScore,
-    weightedPerformanceScore,
-    weightedQuarterlyScore,
-    initialGrade,
-    transmutedGrade,
-    remarks_descrip;
+  // Helper functions
+  const sumArray = (arr) => arr.reduce((a, b) => parseInt(a) + parseInt(b));
+  const calculatePercentage = (score, maxScore) =>
+    ((score / maxScore) * 100).toFixed(3);
+  const calculateWeightedScore = (percentage) => (percentage * 0.4).toFixed(3);
 
   // Written Works
-  sumMaxWrittenScore = max_written_works[0].reduce((a, b) => {
-    return parseInt(a) + parseInt(b);
-  });
-
-  sumYourWrittenScore = written_works[0].reduce((a, b) => {
-    return parseInt(a) + parseInt(b);
-  });
-
-  percentageWrittenScore = (
-    (sumYourWrittenScore / sumMaxWrittenScore) *
-    100
-  ).toFixed(3);
-  weightedWrittenScore = (percentageWrittenScore * 0.4).toFixed(3);
+  const sumMaxWrittenScore = sumArray(max_written_works[0]);
+  const sumYourWrittenScore = sumArray(written_works[0]);
+  const percentageWrittenScore = calculatePercentage(
+    sumYourWrittenScore,
+    sumMaxWrittenScore
+  );
+  const weightedWrittenScore = calculateWeightedScore(percentageWrittenScore);
 
   // Performance Tasks
-  sumMaxPerformanceScore = max_performance_tasks[0].reduce((a, b) => {
-    return parseInt(a) + parseInt(b);
-  });
-
-  sumYourPerformanceScore = performance_tasks[0].reduce((a, b) => {
-    return parseInt(a) + parseInt(b);
-  });
-
-  percentagePerformanceScore = (
-    (sumYourPerformanceScore / sumMaxPerformanceScore) *
-    100
-  ).toFixed(3);
-  weightedPerformanceScore = (percentagePerformanceScore * 0.4).toFixed(3);
+  const sumMaxPerformanceScore = sumArray(max_performance_tasks[0]);
+  const sumYourPerformanceScore = sumArray(performance_tasks[0]);
+  const percentagePerformanceScore = calculatePercentage(
+    sumYourPerformanceScore,
+    sumMaxPerformanceScore
+  );
+  const weightedPerformanceScore = calculateWeightedScore(
+    percentagePerformanceScore
+  );
 
   // Quarterly Assessment
-  sumMaxQuarterlyScore = max_quarterly_assessment[0].reduce((a, b) => {
-    return parseInt(a) + parseInt(b);
-  });
+  const sumMaxQuarterlyScore = sumArray(max_quarterly_assessment[0]);
+  const sumYourQuarterlyScore = sumArray(quarterly_assessment[0]);
+  const percentageQuarterlyScore = calculatePercentage(
+    sumYourQuarterlyScore,
+    sumMaxQuarterlyScore
+  );
+  const weightedQuarterlyScore = (percentageQuarterlyScore * 0.2).toFixed(3);
 
-  sumYourQuarterlyScore = quarterly_assessment[0].reduce((a, b) => {
-    return parseInt(a) + parseInt(b);
-  });
-
-  percentageQuarterlyScore = (
-    (sumYourQuarterlyScore / sumMaxQuarterlyScore) *
-    100
-  ).toFixed(3);
-  weightedQuarterlyScore = (percentageQuarterlyScore * 0.2).toFixed(3);
-
-  initialGrade = (
+  // Calculate initial grade and transmuted grade
+  const initialGrade = (
     parseFloat(weightedPerformanceScore) +
     parseFloat(weightedWrittenScore) +
     parseFloat(weightedQuarterlyScore)
   ).toFixed(2);
-
-  let lowestInitialGrade;
-  let temp;
-  let i;
-  const toTransmuted = (initialGrade) => {
-    if (initialGrade >= 59.99) {
-      lowestInitialGrade = 61.59;
-      temp = 60;
-      for (i = 75; i <= 100; i++) {
-        if (initialGrade >= temp && initialGrade <= lowestInitialGrade) {
-          // transmutedGrade = i;
-          return i;
-        } else {
-          temp = lowestInitialGrade + 0.01;
-          lowestInitialGrade += 1.6;
-        }
-      }
-    } else {
-      lowestInitialGrade = 3.99;
-      temp = 0;
-      for (i = 60; i <= 74; i++) {
-        if (initialGrade >= temp && initialGrade <= lowestInitialGrade) {
-          return i;
-        } else {
-          temp = lowestInitialGrade + 0.01;
-          lowestInitialGrade += 4;
-        }
+  let transmutedGrade;
+  if (initialGrade >= 59.99) {
+    let lowestInitialGrade = 61.59;
+    let temp = 60;
+    for (let i = 75; i <= 100; i++) {
+      if (initialGrade >= temp && initialGrade <= lowestInitialGrade) {
+        transmutedGrade = i;
+        break;
+      } else {
+        temp = lowestInitialGrade + 0.01;
+        lowestInitialGrade += 1.6;
       }
     }
-  };
+  } else {
+    let lowestInitialGrade = 3.99;
+    let temp = 0;
+    for (let i = 60; i <= 74; i++) {
+      if (initialGrade >= temp && initialGrade <= lowestInitialGrade) {
+        transmutedGrade = i;
+        break;
+      } else {
+        temp = lowestInitialGrade + 0.01;
+        lowestInitialGrade += 4;
+      }
+    }
+  }
 
-  transmutedGrade = toTransmuted(initialGrade);
-  if (transmutedGrade >= 90 && transmutedGrade <= 100)
-    remarks_descrip = "Outstanding";
-  else if (transmutedGrade >= 85 && transmutedGrade <= 89)
-    remarks_descrip = "Very Satisfactory";
-  else if (transmutedGrade >= 80 && transmutedGrade <= 84)
-    remarks_descrip = "Satisfactory";
-  else if (transmutedGrade >= 75 && transmutedGrade <= 79)
-    remarks_descrip = "Fairly Satisfactory";
-  else remarks_descrip = "Did Not Meet Expectations";
+  // Determine remarks based on transmuted grade
+  let remarks = getRemarks(transmutedGrade);
 
-  let buttonText;
-  showBreakdown
-    ? (buttonText = "Hide Breakdown")
-    : (buttonText = "Show Breakdown");
+  // Button text for show/hide breakdown
+  const buttonText = showBreakdown ? "Hide Breakdown" : "Show Breakdown";
 
-  const numOneToTen = [" ", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-
-  const dates = [
-    "Total Summary",
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+  // Array of numbers 1 to 10
+  const numOneToTen = [
+    " ",
+    ...Array.from({ length: 10 }, (_, i) => (i + 1).toString()),
   ];
 
+  // Array of months
+  const dates = months;
+
+  // Labels for different types of assessments
   const writtenWorksLabel = useBreakpointValue({
     base: "Written",
     md: "Written Works",
   });
-
   const performanceTasksLabel = useBreakpointValue({
     base: "Performance",
     md: "Performance Tasks",
   });
-
   const quarterlyAssessmentLabel = useBreakpointValue({
     base: "Assessment",
     md: "Quarterly Assessment",
@@ -504,41 +262,9 @@ const Post = ({
 
   return (
     <Flex>
-      <Head>
-        <title>GradExpress | Dashboard</title>
-      </Head>
+      <Head title="GradExpress | Dashboard" />
       <Layout>
-        <Flex
-          mx={{ base: 10, md: 40 }}
-          mt={8}
-          justify={{ base: "center", lg: "flex-end" }}>
-          <Stack direction="row" justify="center" align="center">
-            <Box align="center">
-              <VStack spacing={-1}>
-                <Text fontSize="xl" as="b">
-                  {userNameVal[0][0]}
-                </Text>
-                <Text fontSize="2xs" as="i">
-                  {nameVal[0][0]}
-                </Text>
-              </VStack>
-              <Divider />
-              <Box pt={1} fontSize="xs">
-                <Text as="samp" onClick={handleClick}>
-                  LOGOUT
-                </Text>
-              </Box>
-            </Box>
-            <Image
-              borderRadius="full"
-              boxSize="90px"
-              objectFit="cover"
-              src="https://www.ccair.org/wp-content/uploads/2015/04/wallpaper-for-facebook-profile-photo-e1440624505574.jpg"
-              alt="Dan Abramov"
-              fallbackSrc="https://via.placeholder.com/150"
-            />
-          </Stack>
-        </Flex>
+        <UserLogin {...{ userNameVal, nameVal, handleClick }} />
         <Flex mx={{ base: 5, md: 10, lg: 20, xl: 40 }}>
           <Tabs
             variant="enclosed-colored"
@@ -586,7 +312,7 @@ const Post = ({
                         <Text
                           fontSize={{ base: "md", md: "lg", lg: "2xl" }}
                           as="b">
-                          {remarks_descrip}
+                          {remarks}
                         </Text>
                       </Flex>
                     </div>
@@ -626,286 +352,36 @@ const Post = ({
                   </Button>
                 </Flex>
                 {showBreakdown ? (
-                  <Tabs
-                    align="center"
-                    variant={"soft-rounded"}
-                    colorScheme="blue">
-                    <TabList mb={3}>
-                      <Tab>
-                        <Text fontSize={{ base: "xs", md: "md", lg: "lg" }}>
-                          {writtenWorksLabel}
-                        </Text>
-                      </Tab>
-                      <Tab>
-                        <Text fontSize={{ base: "xs", md: "md", lg: "lg" }}>
-                          {performanceTasksLabel}
-                        </Text>
-                      </Tab>
-                      <Tab>
-                        <Text fontSize={{ base: "xs", md: "md", lg: "lg" }}>
-                          {quarterlyAssessmentLabel}
-                        </Text>
-                      </Tab>
-                    </TabList>
-                    <TabPanels>
-                      <TabPanel>
-                        {/* Written Works  */}
-                        <TableContainer>
-                          <Text
-                            as="b"
-                            fontSize={{ base: "md", md: "lg", lg: "xl" }}>
-                            Written Works (40%)
-                          </Text>
-                          <Table
-                            variant="simple"
-                            size={{ base: "sm", md: "md", lg: "lg" }}>
-                            <Thead>
-                              <Tr>
-                                {numOneToTen.map((num) => (
-                                  <Th>{num}</Th>
-                                ))}
-                                <Th isNumeric>Total</Th>
-                              </Tr>
-                            </Thead>
-                            <Tbody>
-                              {max_written_works.map((row) => (
-                                <Tr>
-                                  <Th>Max Score</Th>
-                                  {row.map((col) => (
-                                    <Td key={col.toString()}>{col}</Td>
-                                  ))}
-                                  <Td isNumeric>{sumMaxWrittenScore}</Td>
-                                </Tr>
-                              ))}
-                              {written_works.map((row) => (
-                                <Tr>
-                                  <Th>Your Score</Th>
-                                  {row.map((col) => (
-                                    <Td key={col.toString()}>{col}</Td>
-                                  ))}
-                                  <Td isNumeric>{sumYourWrittenScore}</Td>
-                                </Tr>
-                              ))}
-                              <Tr>
-                                <Th>Percentage Score</Th>
-                                <Td colSpan={11}>
-                                  <div align="center">
-                                    <Text>{`(Total Max Score / Total Your Score) * 100`}</Text>
-                                    <br />
-                                    <Text>
-                                      {`= (${sumYourWrittenScore} / ${sumMaxWrittenScore}) * 100`}
-                                    </Text>
-                                    <br />
-                                    <Text as="b">{`= ${percentageWrittenScore}`}</Text>
-                                  </div>
-                                </Td>
-                              </Tr>
-                              <Tr>
-                                <Th>Weighted Score</Th>
-                                <Td colSpan={11}>
-                                  <div align="center">
-                                    <Text>{`Percentage Score * 40%`}</Text>
-                                    <br />
-                                    <Text>
-                                      {`= ${percentageWrittenScore} * 40%`}
-                                    </Text>
-                                    <br />
-                                    <Text as="b">{`= ${weightedWrittenScore}`}</Text>
-                                  </div>
-                                </Td>
-                              </Tr>
-                            </Tbody>
-                          </Table>
-                        </TableContainer>
-                      </TabPanel>
-                      <TabPanel>
-                        {/* Performance Tasks  */}
-                        <TableContainer>
-                          <Text
-                            as="b"
-                            fontSize={{ base: "md", md: "lg", lg: "xl" }}>
-                            Performance Tasks (40%)
-                          </Text>
-                          <Table
-                            variant="simple"
-                            size={{ base: "sm", md: "md", lg: "lg" }}>
-                            <Thead>
-                              <Tr>
-                                {numOneToTen.map((num) => (
-                                  <Th>{num}</Th>
-                                ))}
-                                <Th isNumeric>Total</Th>
-                              </Tr>
-                            </Thead>
-                            <Tbody>
-                              {max_performance_tasks.map((row) => (
-                                <Tr>
-                                  <Th>Max Score</Th>
-                                  {row.map((col) => (
-                                    <Td key={col.toString()}>{col}</Td>
-                                  ))}
-                                  <Td isNumeric>{sumMaxPerformanceScore}</Td>
-                                </Tr>
-                              ))}
-                              {performance_tasks.map((row) => (
-                                <Tr>
-                                  <Th>Your Score</Th>
-                                  {row.map((col) => (
-                                    <Td key={col.toString()}>{col}</Td>
-                                  ))}
-                                  <Td isNumeric>{sumYourPerformanceScore}</Td>
-                                </Tr>
-                              ))}
-                              <Tr>
-                                <Th>Percentage Score</Th>
-                                <Td colSpan={11}>
-                                  <div align="center">
-                                    <Text>{`(Total Max Score / Total Your Score) * 100`}</Text>
-                                    <br />
-                                    <Text>
-                                      {`= (${sumYourPerformanceScore} / ${sumMaxPerformanceScore}) * 100`}
-                                    </Text>
-                                    <br />
-                                    <Text as="b">{`= ${percentagePerformanceScore}`}</Text>
-                                  </div>
-                                </Td>
-                              </Tr>
-                              <Tr>
-                                <Th>Weighted Score</Th>
-                                <Td colSpan={11}>
-                                  <div align="center">
-                                    <Text>{`Percentage Score * 40%`}</Text>
-                                    <br />
-                                    <Text>
-                                      {`= ${percentagePerformanceScore} * 40%`}
-                                    </Text>
-                                    <br />
-                                    <Text as="b">{`= ${weightedPerformanceScore}`}</Text>
-                                  </div>
-                                </Td>
-                              </Tr>
-                            </Tbody>
-                          </Table>
-                        </TableContainer>
-                      </TabPanel>
-                      <TabPanel>
-                        {/* Quarterly Assessment  */}
-                        <TableContainer>
-                          <Text
-                            as="b"
-                            fontSize={{ base: "md", md: "lg", lg: "xl" }}>
-                            Quarterly Assessment (20%)
-                          </Text>
-                          <Table
-                            variant="simple"
-                            size={{ base: "sm", md: "md", lg: "lg" }}>
-                            <Thead>
-                              <Tr>
-                                <Th></Th>
-                                {/* <Th>1</Th> */}
-                                <Th colSpan={11}>
-                                  <div align="center">Total</div>
-                                </Th>
-                              </Tr>
-                            </Thead>
-                            <Tbody>
-                              <Tr>
-                                <Th>Max Score</Th>
-                                <Td colSpan={11}>
-                                  <div align="center">
-                                    <Text>{sumMaxQuarterlyScore}</Text>
-                                  </div>
-                                </Td>
-                              </Tr>
-                              <Tr>
-                                <Th>Your Score</Th>
-                                <Td colSpan={11}>
-                                  <div align="center">
-                                    <Text>{sumYourQuarterlyScore}</Text>
-                                  </div>
-                                </Td>
-                              </Tr>
-                              <Tr>
-                                <Th>Percentage Score</Th>
-                                <Td colSpan={11}>
-                                  <div align="center">
-                                    <Text>{`(Total Max Score / Total Your Score) * 100`}</Text>
-                                    <br />
-                                    <Text>
-                                      {`= (${sumYourQuarterlyScore} / ${sumMaxQuarterlyScore}) * 100`}
-                                    </Text>
-                                    <br />
-                                    <Text as="b">{`= ${percentageQuarterlyScore}`}</Text>
-                                  </div>
-                                </Td>
-                              </Tr>
-                              <Tr>
-                                <Th>Weighted Score</Th>
-                                <Td colSpan={11}>
-                                  <div align="center">
-                                    <Text>{`Percentage Score * 20%`}</Text>
-                                    <br />
-                                    <Text>
-                                      {`= ${percentageQuarterlyScore} * 20%`}
-                                    </Text>
-                                    <br />
-                                    <Text as="b">{`= ${weightedQuarterlyScore}`}</Text>
-                                  </div>
-                                </Td>
-                              </Tr>
-                            </Tbody>
-                          </Table>
-                        </TableContainer>
-                      </TabPanel>
-                    </TabPanels>
-                  </Tabs>
+                  <Breakdown
+                    {...{
+                      writtenWorksLabel,
+                      performanceTasksLabel,
+                      quarterlyAssessmentLabel,
+                      numOneToTen,
+                      max_written_works,
+                      written_works,
+                      max_performance_tasks,
+                      performance_tasks,
+                      sumMaxWrittenScore,
+                      sumYourWrittenScore,
+                      percentageWrittenScore,
+                      weightedWrittenScore,
+                      sumMaxPerformanceScore,
+                      sumYourPerformanceScore,
+                      percentagePerformanceScore,
+                      weightedPerformanceScore,
+                      sumMaxQuarterlyScore,
+                      sumYourQuarterlyScore,
+                      percentageQuarterlyScore,
+                      weightedQuarterlyScore,
+                    }}
+                  />
                 ) : (
                   <p> </p>
                 )}
               </TabPanel>
               <TabPanel>
-                <Flex direction={"column"} justify={"center"} my={"50px"}>
-                  <Flex justify={{ base: "center", md: "flex-end" }}>
-                    <Select
-                      mb={"5rem"}
-                      w={{ base: "100%", md: "20%" }}
-                      onChange={handleChange}
-                      fontSize={{ base: "xs", md: "md", lg: "xl" }}
-                      placeholder="-- Select Option --">
-                      {dates.map((date) => (
-                        <option key={date.toString()} value={date}>
-                          {date}
-                        </option>
-                      ))}
-                    </Select>
-                  </Flex>
-
-                  <Flex w={"100%"} align={"center"} justify={"center"}>
-                    <TableContainer>
-                      <Table
-                        variant={"simple"}
-                        size={{ base: "sm", md: "md", lg: "lg" }}>
-                        <Thead>
-                          <Tr>
-                            <Th w={"250px"}>PRESENT</Th>
-                            <Th w={"250px"}>LATE</Th>
-                            <Th w={"250px"}>EXCUSED ABSENCE</Th>
-                            <Th w={"250px"}>UNEXCUSED ABSENCE</Th>
-                          </Tr>
-                        </Thead>
-                        <Tbody>
-                          {display.map((month) => (
-                            <Tr>
-                              {month.map((mon) => (
-                                <Td>{mon}</Td>
-                              ))}
-                            </Tr>
-                          ))}
-                        </Tbody>
-                      </Table>
-                    </TableContainer>
-                  </Flex>
-                </Flex>
+                <Attendance {...{ dates, handleChange, display }} />
               </TabPanel>
             </TabPanels>
           </Tabs>
