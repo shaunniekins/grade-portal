@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import Breakdown from "../components/Breakdown";
 import UserLogin from "../components/UserLogin";
-import { getRemarks } from "./tools/remarks";
+import getRemarks from "./tools/remarks";
 import { getGoogleSheetsClient } from "../pages/api/googleSheetsClient";
 
 export async function getServerSideProps({ query }) {
