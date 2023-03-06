@@ -17,7 +17,6 @@ import {
   CircularProgressLabel,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import Attendance from "../components/AttendanceTab";
 import Breakdown from "../components/Breakdown";
 import UserLogin from "../components/UserLogin";
 import { getRemarks } from "../pages/tools/msgCreate";
@@ -65,39 +64,6 @@ export async function getServerSideProps({ query }) {
   const nameVal = responseWPANU.data.valueRanges[3].values;
   const userNameVal = responseWPANU.data.valueRanges[4].values;
 
-  //ATTENDANCE
-  const minusId = id - 6;
-
-  //MONTHS
-  const months = [
-    "SUMMARY",
-    "JANUARY",
-    "FEBRUARY",
-    "MARCH",
-    "APRIL",
-    "MAY",
-    "JUNE",
-    "JULY",
-    "AUGUST",
-    "SEPTEMBER",
-    "OCTOBER",
-    "NOVEMBER",
-    "DECEMBER",
-  ];
-
-  //Result
-  const attendanceData = [];
-
-  for (const month of months) {
-    const responseAttendance = await googleSheetsClient.spreadsheets.values.get(
-      {
-        spreadsheetId: process.env.SHEET_ID,
-        range: `${month}!C${minusId}:F${minusId}`,
-      }
-    );
-    attendanceData.push(responseAttendance.data.values);
-  }
-
   return {
     props: {
       max_written_works,
@@ -108,9 +74,6 @@ export async function getServerSideProps({ query }) {
       quarterly_assessment,
       nameVal,
       userNameVal,
-      months,
-      attendanceData,
-      minusId,
     },
   };
 }
@@ -126,9 +89,6 @@ const Post = (props) => {
     quarterly_assessment,
     nameVal,
     userNameVal,
-    months,
-    attendanceData,
-    minusId,
   } = props;
 
   useAuth();
@@ -140,8 +100,6 @@ const Post = (props) => {
     sessionStorage.setItem("isAuthenticated", false);
     router.push("/");
   };
-
-  const [display, setDisplay] = useState(attendanceData[0]);
 
   function handleChange(event) {
     const selectedOption = event.target.value;
@@ -159,8 +117,6 @@ const Post = (props) => {
       November: 11,
       December: 12,
     }[selectedOption];
-
-    setDisplay(attendanceData[monthIndex] || attendanceData[0]);
   }
 
   // Helper functions
@@ -243,9 +199,6 @@ const Post = (props) => {
     ...Array.from({ length: 10 }, (_, i) => (i + 1).toString()),
   ];
 
-  // Array of months
-  const dates = months;
-
   // Labels for different types of assessments
   const writtenWorksLabel = useBreakpointValue({
     base: "Written",
@@ -274,12 +227,6 @@ const Post = (props) => {
               <Tab>
                 <Text fontSize={{ base: "sm", md: "md", lg: "lg" }}>
                   Science
-                </Text>
-              </Tab>
-              <Tab>
-                {" "}
-                <Text fontSize={{ base: "sm", md: "md", lg: "lg" }}>
-                  Attendance
                 </Text>
               </Tab>
             </TabList>
@@ -379,9 +326,6 @@ const Post = (props) => {
                 ) : (
                   <p> </p>
                 )}
-              </TabPanel>
-              <TabPanel>
-                <Attendance {...{ dates, handleChange, display }} />
               </TabPanel>
             </TabPanels>
           </Tabs>
