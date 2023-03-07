@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Router from "next/router";
 import { React, useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "./api/useAuth";
@@ -41,7 +42,21 @@ export async function getServerSideProps({ query }) {
   });
 
   //HPS Result
-  const max_written_works = responseMax.data.valueRanges[0].values;
+  const max_written_works = responseMax.data.valueRanges[0].values[0]
+    .slice(0, 10)
+    .map((val) => {
+      if (val === null || val === undefined) {
+        return " ";
+      } else {
+        return val;
+      }
+    });
+  max_written_works.length = 10;
+  for (let i = 0; i < max_written_works.length; i++) {
+    if (max_written_works[i] === null || max_written_works[i] === undefined) {
+      max_written_works[i] = "";
+    }
+  }
   const max_performance_tasks = responseMax.data.valueRanges[1].values;
   const max_quarterly_assessment = responseMax.data.valueRanges[2].values;
 
@@ -57,12 +72,29 @@ export async function getServerSideProps({ query }) {
     ],
   });
 
-  //User Result
-  const written_works = responseWPANU.data.valueRanges[0].values;
-  const performance_tasks = responseWPANU.data.valueRanges[1].values;
-  const quarterly_assessment = responseWPANU.data.valueRanges[2].values;
-  const nameVal = responseWPANU.data.valueRanges[3].values;
-  const userNameVal = responseWPANU.data.valueRanges[4].values;
+  // User Result
+  const written_works = responseWPANU.data.valueRanges[0].values[0]
+    .slice(0, 10)
+    .map((val) => {
+      if (!(val === null || val === undefined)) return val;
+    });
+  written_works.length = 10;
+  for (let i = 0; i < written_works.length; i++) {
+    if (!written_works[i]) written_works[i] = "";
+  }
+
+  const performance_tasks = responseWPANU.data.valueRanges[1].values.map(
+    (row) => row.map((val) => val || "")
+  );
+  const quarterly_assessment = responseWPANU.data.valueRanges[2].values.map(
+    (row) => row.map((val) => val || "")
+  );
+  const nameVal = responseWPANU.data.valueRanges[3].values.map((row) =>
+    row.map((val) => val || "")
+  );
+  const userNameVal = responseWPANU.data.valueRanges[4].values.map((row) =>
+    row.map((val) => val || "")
+  );
 
   return {
     props: {
@@ -94,22 +126,35 @@ const Post = (props) => {
   useAuth();
   const { query } = useRouter();
   const [showBreakdown, setShowBreakdown] = useState(false);
-
+  // console.log(written_works);
   const handleClick = (e) => {
     e.preventDefault();
     sessionStorage.setItem("isAuthenticated", false);
-    router.push("https://grade-portal.vercel.app/");
+    Router.push("/");
+    // router.push("https://grade-portal.vercel.app/");
   };
 
   // Helper functions
-  const sumArray = (arr) => arr.reduce((a, b) => parseInt(a) + parseInt(b));
+  const sumArray = (arr) => {
+    if (!Array.isArray(arr)) {
+      return 0;
+    }
+    return arr.reduce((a, b) => {
+      if (isNaN(parseInt(b))) {
+        return a;
+      } else {
+        return a + parseInt(b);
+      }
+    }, 0);
+  };
+
   const calculatePercentage = (score, maxScore) =>
     ((score / maxScore) * 100).toFixed(3);
   const calculateWeightedScore = (percentage) => (percentage * 0.4).toFixed(3);
 
   // Written Works
-  const sumMaxWrittenScore = sumArray(max_written_works[0]);
-  const sumYourWrittenScore = sumArray(written_works[0]);
+  const sumMaxWrittenScore = sumArray(max_written_works);
+  const sumYourWrittenScore = sumArray(written_works);
   const percentageWrittenScore = calculatePercentage(
     sumYourWrittenScore,
     sumMaxWrittenScore
@@ -142,6 +187,7 @@ const Post = (props) => {
     parseFloat(weightedWrittenScore) +
     parseFloat(weightedQuarterlyScore)
   ).toFixed(2);
+
   let transmutedGrade;
   if (initialGrade >= 59.99) {
     let lowestInitialGrade = 61.59;
@@ -223,11 +269,12 @@ const Post = (props) => {
                     direction={{ base: "row", lg: "column" }}
                     gap={10}
                     pb={{ base: 10, lg: 0 }}>
-                    <div>
+                    <Flex direction={"column"} align={"center"}>
                       <CircularProgress
                         value={transmutedGrade}
                         size={{ base: 90, sm: 120, md: 150, lg: 200 }}
-                        thickness={8}>
+                        thickness={8}
+                        color="yellow.300">
                         <CircularProgressLabel>
                           <Text fontSize={{ base: "lg", lg: "4xl" }}>
                             {transmutedGrade}
@@ -236,31 +283,39 @@ const Post = (props) => {
                       </CircularProgress>
                       <Flex direction="column" align="center">
                         <Text fontSize={{ base: "md", lg: "xl" }}>
-                          Remarks:
+                          Final Grade
                         </Text>
-                        <Text
-                          fontSize={{ base: "md", md: "lg", lg: "2xl" }}
-                          as="b">
-                          {remarks}
-                        </Text>
+                        <Flex align={"center"}>
+                          {/* <Text fontSize={{ base: "md", lg: "xl" }}>
+                            {`Remarks: \u00A0\u00A0\u00A0\u00A0`}
+                          </Text> */}
+
+                          <Text
+                            fontSize={{ base: "md", md: "lg", lg: "2xl" }}
+                            as="b">
+                            {remarks}
+                          </Text>
+                        </Flex>
                       </Flex>
-                    </div>
-                    <div>
+                    </Flex>
+                    <Flex direction={"column"} align={"center"}>
                       <CircularProgress
                         value={initialGrade}
                         size={{ base: 50, sm: 65, md: 90, lg: 100 }}
-                        thickness={8}
-                        color="yellow.300">
+                        thickness={8}>
                         <CircularProgressLabel>
                           {initialGrade}
                         </CircularProgressLabel>
                       </CircularProgress>
-                      <Flex direction="column" align="center">
+                      <Flex
+                        direction="column"
+                        align="center"
+                        justify={"center"}>
                         <Text fontSize={{ base: "md", lg: "xl" }}>
                           Initial Grade
                         </Text>
                       </Flex>
-                    </div>
+                    </Flex>
                   </Flex>
                   <Flex justify="center" align="center" direction="column">
                     <Text fontSize={{ base: "xl", lg: "2xl" }} as="b">
@@ -306,6 +361,7 @@ const Post = (props) => {
                     }}
                   />
                 ) : (
+                  // <p></p>
                   <p> </p>
                 )}
               </TabPanel>
