@@ -1,6 +1,5 @@
-import { position } from "@chakra-ui/react";
-import { PureComponent } from "react";
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   LineChart,
   Line,
@@ -8,85 +7,80 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
-  ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
+import { useMediaQuery } from "@chakra-ui/react";
 
 const LineGraph = ({ max_written_works, written_works }) => {
-  // const highest_possible_score = [10, 12, "", 20, 25, "", 20, "", 10, 9, 35];
-  // const student_score = [8, 8, 20, 7, 29, 19, 16, 5];
-  // const highest_possible_score = max_written_works.flat();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const highest_possible_score = max_written_works.map((value) => {
-    const intValue = parseInt(value);
-    return isNaN(intValue) ? "" : intValue;
-  });
+  const [isSmallerThanMd] = useMediaQuery("(max-width: 768px)");
 
-  const student_score = written_works.map((value) => {
-    const intValue = parseInt(value);
-    return isNaN(intValue) ? "" : intValue;
-  });
+  const containerHeight = isSmallerThanMd ? 200 : 500;
+  const chartScale = isSmallerThanMd ? 10 : 15;
+  const labelWidth = isSmallerThanMd ? undefined : 90;
+  const labelHeight = isSmallerThanMd ? undefined : 50;
+  const labelFontSize = isSmallerThanMd ? 10 : 18;
 
-  const percentage = student_score.slice(0, 10).map((score, i) => {
-    const value = (score / highest_possible_score[i]) * 100;
-    return isNaN(value) || !isFinite(value) ? 0 : value;
-  });
+  useEffect(() => {
+    const highest_possible_score = max_written_works.map((value) =>
+      parseInt(value)
+    );
+    const student_score = written_works.map((value) => parseInt(value));
 
-  // const [progress, setProgress] = useState(0);
+    const percentage = student_score
+      .slice(0, 10)
+      .map((score, i) =>
+        isNaN(score) || !isFinite(score) || isNaN(highest_possible_score[i])
+          ? 0
+          : (score / highest_possible_score[i]) * 100
+      );
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setProgress((prevProgress) => prevProgress + 10);
-  //   }, 1000);
-  //   return () => clearInterval(interval);
-  // }, []);
+    const chartData = highest_possible_score.slice(0, 10).map((hps, i) => ({
+      name: `${i + 1}`,
+      ss: percentage[i],
+      amt: student_score[i],
+    }));
 
-  const data = highest_possible_score.map((hps, i) => ({
-    name: `${i + 1}`,
-    // hps,
-    ss: percentage[i],
-    amt: student_score[i],
-  }));
+    setData(chartData);
+    setIsLoading(false);
+  }, [max_written_works, written_works]);
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   const renderLine = () => (
-    <ResponsiveContainer width={"100%"} height={500}>
-      <LineChart data={data}>
+    <ResponsiveContainer width={"100%"} height={containerHeight}>
+      <LineChart data={data} fontSize={chartScale}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
-          height={50}
+          height={labelHeight}
           dataKey="name"
           padding={{ left: 30, right: 30 }}
           label={{
-            value: "Month",
+            value: "Grade",
             position: "insideBottom",
-            fontSize: 18,
-            fontWeight: "bold",
+            fontSize: labelFontSize,
+            fontStyle: "italic",
           }}
         />
         <YAxis
-          width={90}
+          width={labelWidth}
           label={{
             value: "Score Percentage",
             angle: -90,
-            fontSize: 18,
-            fontWeight: "bold",
+            fontSize: labelFontSize,
+            fontStyle: "italic",
+            // fontWeight: "bold",
           }}
         />
         <Tooltip />
-        {/* <Legend /> */}
-        {/* <Line
-          type="monotone"
-          dataKey="hps"
-          stroke="#8884d8"
-          animationBegin={progress}
-          activeDot={{ r: 8 }}
-        /> */}
         <Line
           type="monotone"
           dataKey="ss"
           stroke="#8884d8"
-          // animationBegin={progress}
           activeDot={{ r: 8 }}
         />
       </LineChart>
