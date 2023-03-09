@@ -102,9 +102,6 @@ export default function Home({
   sheetName2,
   sheetName3,
 }) {
-  // console.log(user1);
-  // console.log(user2);
-
   const formattedUser1 = user1.map((nameArr) => {
     if (nameArr.length < 1 || !nameArr[0]) {
       return ""; // or some default value if nameArr is invalid
@@ -203,16 +200,29 @@ export default function Home({
     let lrn = password; //LRN was used as the password, so basically the same lrn === password
 
     //authentication
-    if (userExists && pass1[count] == formData.password) {
+    if (
+      (userExists && pass1[count] == formData.password) ||
+      (userExists && pass2[count] == formData.password) ||
+      (userExists && pass3[count] == formData.password)
+    ) {
       localStorage.setItem("isAuthenticated", "true");
       Router.push({
         pathname: "/dashboard",
-        query: { sheetName, currentID, username, password, lrn },
+        // query: { sheetName, currentID, username, password, lrn },
+        query: { sheetName, currentID, lrn },
       });
-    } else if (userExists && pass1[0][count] != formData.password) {
+    } else if (
+      (userExists && pass1[0][count] != formData.password) ||
+      (userExists && pass2[0][count] != formData.password) ||
+      (userExists && pass3[0][count] != formData.password)
+    ) {
       setError("Invalid password");
       alert("Incorrect password");
-    } else if (!userExists && pass1[0][count] == formData.password) {
+    } else if (
+      (!userExists && pass1[0][count] == formData.password) ||
+      (!userExists && pass2[0][count] == formData.password) ||
+      (!userExists && pass3[0][count] == formData.password)
+    ) {
       setError("Invalid username");
       alert("Incorrect username");
     } else {

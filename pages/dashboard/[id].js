@@ -16,10 +16,12 @@ import {
   Text,
   CircularProgress,
   CircularProgressLabel,
+  VStack,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import Breakdown from "../../components/Breakdown";
 import UserLogin from "../../components/UserLogin";
+import { ProfileCard2 } from "../../components/ProfileCard";
 import { getRemarks } from "../../tools/remarks";
 import { getGoogleSheetsClient } from "../../api/googleSheetsClient";
 
@@ -66,7 +68,6 @@ export async function getServerSideProps({ query }) {
     }
   }
 
-  // const max_performance_tasks = responseMax.data.valueRanges[1].values;
   const max_performance_tasks = responseMax.data.valueRanges[1].values[0]
     .slice(0, 10)
     .map((val) => {
@@ -87,25 +88,6 @@ export async function getServerSideProps({ query }) {
   }
 
   const max_quarterly_assessment = responseMax.data.valueRanges[2].values;
-  // const max_quarterly_assessment = responseMax.data.valueRanges[2].values[0]
-  //   .slice(0, 10)
-  //   .map((val) => {
-  //     if (val === null || val === undefined) {
-  //       return " ";
-  //     } else {
-  //       return val;
-  //     }
-  //   });
-  // max_quarterly_assessment.length = 10;
-  // for (let i = 0; i < max_quarterly_assessment.length; i++) {
-  //   if (
-  //     max_quarterly_assessment[i] === null ||
-  //     max_quarterly_assessment[i] === undefined
-  //   ) {
-  //     max_quarterly_assessment[i] = "";
-  //   }
-  // }
-  // console.log(max_quarterly_assessment);
 
   //User
   const responseWPANU = await googleSheetsClient.spreadsheets.values.batchGet({
@@ -144,7 +126,6 @@ export async function getServerSideProps({ query }) {
   for (let i = 0; i < performance_tasks.length; i++) {
     if (!performance_tasks[i]) performance_tasks[i] = "";
   }
-  console.log(performance_tasks);
 
   const quarterly_assessment = responseWPANU.data.valueRanges[2].values.map(
     (row) => row.map((val) => val || "")
@@ -192,16 +173,26 @@ const Post = (props) => {
     nameVal,
     userNameVal,
   } = props;
-  // console.log(max_quarterly_assessment);
 
   useAuth();
-  const { query } = useRouter();
+  const {
+    id,
+    selectedSchoolOption,
+    selectedQuarterOption,
+    selectedSubjectOption,
+    nameDisplay,
+    lrnDisplay,
+    schoolYearDisplay,
+    gradeDisplay,
+    sheetNameDisplay,
+  } = useRouter().query;
+
   const [showBreakdown, setShowBreakdown] = useState(false);
   const handleClick = (e) => {
     e.preventDefault();
     sessionStorage.setItem("isAuthenticated", false);
-    // Router.push("/");
-    Router.push("https://grade-portal.vercel.app/");
+    Router.push("/");
+    // Router.push("https://grade-portal.vercel.app/");
   };
 
   // Written Works
@@ -301,7 +292,29 @@ const Post = (props) => {
     <Flex>
       <Head title="GradExpress | Dashboard" />
       <Layout>
-        <UserLogin {...{ userNameVal, nameVal, handleClick }} />
+        {/* <UserLogin {...{ userNameVal, nameVal, handleClick }} /> */}
+        <Flex
+          justify={{ md: "center", lg: "flex-end" }}
+          my={"2rem"}
+          px={{ base: "unset", md: 10, lg: 20, xl: 40 }}
+          position={"relative"}
+          h={{ base: "150px", md: "220px" }}
+          w={"100%"}>
+          {/* <div style={{ position: "relative", height: "150px", width: "100%" }}> */}
+          <ProfileCard2
+            {...{
+              nameDisplay,
+              schoolYearDisplay,
+              sheetNameDisplay,
+              lrnDisplay,
+              gradeDisplay,
+              selectedSchoolOption,
+              selectedQuarterOption,
+              selectedSubjectOption,
+            }}
+          />
+          {/* </div> */}
+        </Flex>
         <Flex mx={{ base: 5, md: 10, lg: 20, xl: 40 }}>
           <Tabs
             variant="enclosed-colored"

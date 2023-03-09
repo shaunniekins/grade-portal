@@ -18,11 +18,13 @@ import { useState, React } from "react";
 import Router, { useRouter } from "next/router";
 import ProfileCard from "../../components/ProfileCard";
 import { getGoogleSheetsClient } from "../../api/googleSheetsClient";
+import { useAuth } from "../../api/useAuth";
 
 const Dashboard = (props) => {
-  const router = useRouter();
+  useAuth();
   const { name, sy } = props;
-  const { sheetName, currentID, username, password, lrn } = router.query;
+  // const { sheetName, currentID, username, password, lrn } = useRouter().query;
+  const { sheetName, currentID, lrn } = useRouter().query;
 
   const [isClicked, setIsClicked] = useState(true);
   const handleClickView = () => {
@@ -30,6 +32,7 @@ const Dashboard = (props) => {
   };
 
   const handleClickText = () => {
+    localStorage.setItem("isAuthenticated", "false");
     Router.push({
       pathname: "/",
     });
@@ -48,16 +51,6 @@ const Dashboard = (props) => {
   const [selectedSubjectOption, setSelectedSubjectOption] = useState("");
   const handleSubjectOption = (event) => {
     setSelectedSubjectOption(event.target.value);
-  };
-
-  let id = currentID;
-  const handleClickContinue = (e) => {
-    e.preventDefault();
-
-    Router.push({
-      pathname: `/dashboard/${id}`,
-      query: { id },
-    });
   };
 
   /***  Display data to pass ***/
@@ -84,6 +77,26 @@ const Dashboard = (props) => {
   }
 
   let lrnDisplay = lrn;
+
+  let id = currentID;
+  const handleClickContinue = (e) => {
+    e.preventDefault();
+
+    Router.push({
+      pathname: `/dashboard/${id}`,
+      query: {
+        id,
+        selectedSchoolOption,
+        selectedQuarterOption,
+        selectedSubjectOption,
+        nameDisplay,
+        lrnDisplay,
+        schoolYearDisplay,
+        gradeDisplay,
+        sheetNameDisplay,
+      },
+    });
+  };
 
   return (
     <>
@@ -241,7 +254,7 @@ const Dashboard = (props) => {
                               onChange={handleSubjectOption}
                               value={selectedSubjectOption}
                               required>
-                              <option value="genphys2">
+                              <option value="General Physics 2">
                                 General Physics 2
                               </option>
                             </Select>
@@ -254,9 +267,7 @@ const Dashboard = (props) => {
                         type="submit"
                         fontSize={{ base: "xs", md: "sm" }}
                         bg="blue.600"
-                        color="white"
-                        // onClick={handleClickContinue}
-                      >
+                        color="white">
                         CONTINUE
                       </Button>
                     </Flex>

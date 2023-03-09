@@ -1,6 +1,15 @@
 import { Box, Text, Flex } from "@chakra-ui/react";
+import Router from "next/router";
 
 const Header = () => {
+  const handleClick = () => {
+    localStorage.setItem("isAuthenticated", "false");
+
+    Router.push({
+      pathname: "/",
+    });
+  };
+
   return (
     <Flex
       as="nav"
@@ -22,7 +31,12 @@ const Header = () => {
           base: "4",
           lg: "5",
         }}>
-        <Text as="b" fontSize="2xl" color="white">
+        <Text
+          as="b"
+          fontSize="2xl"
+          color="white"
+          onClick={handleClick}
+          cursor={"pointer"}>
           GradExpress
         </Text>
       </Box>

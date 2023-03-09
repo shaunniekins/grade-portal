@@ -7,7 +7,7 @@ const NotFound = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      router.push("https://grade-portal.vercel.app/");
+      router.push("/");
     }, 2500);
   }, []);
 
