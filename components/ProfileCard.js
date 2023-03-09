@@ -7,17 +7,6 @@ const ProfileCard = ({
   lrnDisplay,
   gradeDisplay,
 }) => {
-  switch (sheetNameDisplay.toLowerCase()) {
-    case "kepler":
-    case "pasteur":
-    case "schwann":
-      gradeDisplay = "12";
-      break;
-    default:
-      gradeDisplay = "";
-      break;
-  }
-
   return (
     <Box
       bg="white"

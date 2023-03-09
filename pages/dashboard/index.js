@@ -60,6 +60,7 @@ const Dashboard = (props) => {
     });
   };
 
+  /***  Display data to pass ***/
   let nameDisplay = name[0]
     .toLowerCase()
     .replace(/\b\w/g, (char) => char.toUpperCase());
