@@ -292,15 +292,13 @@ const Post = (props) => {
     <Flex>
       <Head title="GradExpress | Dashboard" />
       <Layout>
-        {/* <UserLogin {...{ userNameVal, nameVal, handleClick }} /> */}
         <Flex
-          justify={{ md: "center", lg: "flex-end" }}
+          justify={{ base: "center", lg: "flex-end" }}
           my={"2rem"}
           px={{ base: "unset", md: 10, lg: 20, xl: 40 }}
           position={"relative"}
           h={{ base: "150px", md: "220px" }}
           w={"100%"}>
-          {/* <div style={{ position: "relative", height: "150px", width: "100%" }}> */}
           <ProfileCard2
             {...{
               nameDisplay,

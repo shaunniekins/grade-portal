@@ -115,11 +115,11 @@ export const ProfileCard2 = ({
       </Flex>
       <VStack spacing={2} fontSize={{ base: "sm", md: "lg" }}>
         <Flex direction={"column"} align="flex-start">
-          {texts.slice(0, 2).map((text) => (
-            <Text key={text}>{text}</Text>
+          {texts.slice(0, 2).map((text, i) => (
+            <Text key={text + i}>{text}</Text>
           ))}
           {showMore ? (
-            texts.slice(2).map((text) => <Text key={text}>{text}</Text>)
+            texts.slice(2).map((text, i) => <Text key={text + i}>{text}</Text>)
           ) : (
             <></>
           )}
