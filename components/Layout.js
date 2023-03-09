@@ -4,7 +4,7 @@ import { Flex, Box } from "@chakra-ui/react";
 
 const Layout = ({ children }) => {
   return (
-    <Flex flexDirection="column" minH={"100vh"} w="100%">
+    <Flex flexDirection="column" minH={"100vh"} w="100%" userSelect={"none"}>
       <Navbar />
       <Flex flexDirection="column" mb={20}>
         {children}

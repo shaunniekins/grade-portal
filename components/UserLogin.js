@@ -26,7 +26,7 @@ const UserLogin = ({ userNameVal, nameVal, handleClick }) => {
           </VStack>
           <Divider />
           <Box pt={1} fontSize="xs">
-            <Text as="samp" onClick={handleClick}>
+            <Text as="samp" onClick={handleClick} cursor={"pointer"}>
               LOGOUT
             </Text>
           </Box>
