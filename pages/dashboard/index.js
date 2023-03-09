@@ -132,7 +132,13 @@ const Dashboard = (props) => {
             </CardFooter>
           </Card>
         ) : (
-          <Card bg="white" px={4} py={7} rounded="xl" boxShadow="2xl" w={700}>
+          <Card
+            bg="white"
+            px={4}
+            py={7}
+            rounded="xl"
+            boxShadow="2xl"
+            w={{ base: 500, md: 700 }}>
             <Text
               fontSize={"sm"}
               mt={"-1rem"}
@@ -140,32 +146,48 @@ const Dashboard = (props) => {
               onClick={handleClickText}>
               &lt; back
             </Text>
-            <CardHeader mb={2} py={1} align="center">
+            <CardHeader mb={{ md: 2 }} py={1} align="center">
               <Flex direction={"column"}>
-                <Text as="b" fontSize="2xl" size="md">
+                <Text
+                  as="b"
+                  fontSize={{ base: "xl", md: "2xl" }}
+                  // size={{ base: "sm", md: "md" }}
+                >
                   GradExpress
                 </Text>
               </Flex>
             </CardHeader>
             <CardBody>
-              <Flex gap={"5%"}>
-                <ProfileCard
-                  {...{
-                    nameDisplay,
-                    schoolYearDisplay,
-                    sheetNameDisplay,
-                    lrnDisplay,
-                    gradeDisplay,
-                  }}
-                />
+              <Flex gap={"5%"} direction={{ base: "column", md: "row" }}>
+                <Flex
+                  justify={{ base: "center", md: "flex-start" }}
+                  mb={{ base: "1rem", md: "unset" }}>
+                  <ProfileCard
+                    {...{
+                      nameDisplay,
+                      schoolYearDisplay,
+                      sheetNameDisplay,
+                      lrnDisplay,
+                      gradeDisplay,
+                    }}
+                  />
+                </Flex>
                 <Formik onSubmit={handleClickContinue}>
                   <form onSubmit={handleClickContinue}>
                     <Flex direction={"column"}>
-                      <VStack spacing={5} align="flex-end">
+                      <VStack
+                        spacing={5}
+                        align="flex-end"
+                        fontSize={{ base: "sm", md: "lg" }}>
                         <FormControl>
                           <Flex align={"flex-end"}>
-                            <FormLabel w={100}>School:</FormLabel>
+                            <FormLabel
+                              fontSize={{ base: "sm", md: "lg" }}
+                              w={100}>
+                              School:
+                            </FormLabel>
                             <Select
+                              fontSize={{ base: "sm", md: "lg" }}
                               border={"1px"}
                               borderColor={"blue.600"}
                               placeholder="-- Select school --"
@@ -178,8 +200,13 @@ const Dashboard = (props) => {
                         </FormControl>
                         <FormControl>
                           <Flex align={"flex-end"}>
-                            <FormLabel w={100}>Quarter: </FormLabel>
+                            <FormLabel
+                              fontSize={{ base: "sm", md: "lg" }}
+                              w={100}>
+                              Quarter:{" "}
+                            </FormLabel>
                             <Select
+                              fontSize={{ base: "sm", md: "lg" }}
                               border={"1px"}
                               borderColor={"blue.600"}
                               placeholder="-- Select quarter --"
@@ -201,8 +228,13 @@ const Dashboard = (props) => {
                         </FormControl>
                         <FormControl>
                           <Flex align={"flex-end"}>
-                            <FormLabel w={100}>Subject: </FormLabel>
+                            <FormLabel
+                              fontSize={{ base: "sm", md: "lg" }}
+                              w={100}>
+                              Subject:{" "}
+                            </FormLabel>
                             <Select
+                              fontSize={{ base: "sm", md: "lg" }}
                               border={"1px"}
                               borderColor={"blue.600"}
                               placeholder="-- Select subject --"
@@ -217,10 +249,10 @@ const Dashboard = (props) => {
                         </FormControl>
                       </VStack>
                     </Flex>
-                    <Flex justify={"flex-end"} mt={"50%"}>
+                    <Flex justify={"flex-end"} mt={{ base: "10%", md: "50%" }}>
                       <Button
                         type="submit"
-                        fontSize={"sm"}
+                        fontSize={{ base: "xs", md: "sm" }}
                         bg="blue.600"
                         color="white"
                         // onClick={handleClickContinue}
