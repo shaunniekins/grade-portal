@@ -19,8 +19,14 @@ export const calculatePercentage = (score, maxScore) =>
   ((score / maxScore) * 100).toFixed(3);
 
 //Get weighted score of the percentage
-const WEIGHTVAL = 0.4;
-export const calculateWeightedScore = (percentage) =>
-  (percentage * WEIGHTVAL).toFixed(3);
+const PER_WRITTEN = 0.25;
+export const calculateWeightedScoreWritten = (percentage) =>
+  (percentage * PER_WRITTEN).toFixed(3);
 
-//Grade Computation
+const PER_PERFORMANCE = 0.45;
+export const calculateWeightedScorePerformance = (percentage) =>
+  (percentage * PER_PERFORMANCE).toFixed(3);
+
+const PER_ASSESSMENT = 0.3;
+export const calculateWeightedScoreAssessment = (percentage) =>
+  (percentage * PER_ASSESSMENT).toFixed(3);

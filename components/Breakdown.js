@@ -15,7 +15,8 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 
-import LineGraph from "../tools/LineGraph";
+import LineGraphWritten from "../tools/LineGraphWritten";
+import LineGraphPerformance from "../tools/LineGraphPerformance";
 
 function Breakdown({
   writtenWorksLabel,
@@ -40,6 +41,9 @@ function Breakdown({
   weightedQuarterlyScore,
 }) {
   const [tabIndex, setTabIndex] = useState(0);
+  const percentageWritten = "25%";
+  const percentagePerformance = "45%";
+  const percentageAssessment = "30%";
 
   return (
     <>
@@ -66,7 +70,7 @@ function Breakdown({
             {/* Written Works  */}
             <TableContainer>
               <Text as="b" fontSize={{ base: "md", md: "lg", lg: "xl" }}>
-                Written Works (40%)
+                {`Written Works (${percentageWritten})`}
               </Text>
               <Table variant="simple" size={{ base: "sm", md: "md", lg: "lg" }}>
                 <Thead>
@@ -114,9 +118,9 @@ function Breakdown({
                     <Th>Weighted Score</Th>
                     <Td colSpan={11}>
                       <div align="center">
-                        <Text>{`Percentage Score * 40%`}</Text>
+                        <Text>{`Percentage Score * ${percentageWritten}`}</Text>
                         <br />
-                        <Text>{`= ${percentageWrittenScore} * 40%`}</Text>
+                        <Text>{`= ${percentageWrittenScore} * ${percentageWritten}`}</Text>
                         <br />
                         <Text as="b">{`= ${weightedWrittenScore}`}</Text>
                       </div>
@@ -125,12 +129,13 @@ function Breakdown({
                 </Tbody>
               </Table>
             </TableContainer>
+            <LineGraphWritten {...{ max_written_works, written_works }} />
           </TabPanel>
           <TabPanel>
             {/* Performance Tasks  */}
             <TableContainer>
               <Text as="b" fontSize={{ base: "md", md: "lg", lg: "xl" }}>
-                Performance Tasks (40%)
+                {`Performance Tasks (${percentagePerformance})`}
               </Text>
               <Table variant="simple" size={{ base: "sm", md: "md", lg: "lg" }}>
                 <Thead>
@@ -142,24 +147,24 @@ function Breakdown({
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {max_performance_tasks.map((row) => (
-                    <Tr>
-                      <Th>Max Score</Th>
-                      {row.map((col, index) => (
-                        <Td key={index}>{col}</Td>
-                      ))}
-                      <Td isNumeric>{sumMaxPerformanceScore}</Td>
-                    </Tr>
-                  ))}
-                  {performance_tasks.map((row) => (
-                    <Tr>
-                      <Th>Your Score</Th>
-                      {row.map((col, index) => (
-                        <Td key={index}>{col}</Td>
-                      ))}
-                      <Td isNumeric>{sumYourPerformanceScore}</Td>
-                    </Tr>
-                  ))}
+                  {/* {max_performance_tasks.map((row) => ( */}
+                  <Tr>
+                    <Th>Max Score</Th>
+                    {max_performance_tasks.map((col, index) => (
+                      <Td key={index}>{col}</Td>
+                    ))}
+                    <Td isNumeric>{sumMaxPerformanceScore}</Td>
+                  </Tr>
+                  {/* ))} */}
+                  {/* {performance_tasks.map((row) => ( */}
+                  <Tr>
+                    <Th>Your Score</Th>
+                    {performance_tasks.map((col, index) => (
+                      <Td key={index}>{col}</Td>
+                    ))}
+                    <Td isNumeric>{sumYourPerformanceScore}</Td>
+                  </Tr>
+                  {/* ))} */}
                   <Tr>
                     <Th>Percentage Score</Th>
                     <Td colSpan={11}>
@@ -178,9 +183,9 @@ function Breakdown({
                     <Th>Weighted Score</Th>
                     <Td colSpan={11}>
                       <div align="center">
-                        <Text>{`Percentage Score * 40%`}</Text>
+                        <Text>{`Percentage Score * ${percentagePerformance}`}</Text>
                         <br />
-                        <Text>{`= ${percentagePerformanceScore} * 40%`}</Text>
+                        <Text>{`= ${percentagePerformanceScore} * ${percentagePerformance}`}</Text>
                         <br />
                         <Text as="b">{`= ${weightedPerformanceScore}`}</Text>
                       </div>
@@ -189,12 +194,15 @@ function Breakdown({
                 </Tbody>
               </Table>
             </TableContainer>
+            <LineGraphPerformance
+              {...{ max_performance_tasks, performance_tasks }}
+            />
           </TabPanel>
           <TabPanel>
             {/* Quarterly Assessment  */}
             <TableContainer>
               <Text as="b" fontSize={{ base: "md", md: "lg", lg: "xl" }}>
-                Quarterly Assessment (20%)
+                {`Quarterly Assessment (${percentageAssessment})`}
               </Text>
               <Table variant="simple" size={{ base: "sm", md: "md", lg: "lg" }}>
                 <Thead>
@@ -241,9 +249,9 @@ function Breakdown({
                     <Th>Weighted Score</Th>
                     <Td colSpan={11}>
                       <div align="center">
-                        <Text>{`Percentage Score * 20%`}</Text>
+                        <Text>{`Percentage Score * ${percentageAssessment}`}</Text>
                         <br />
-                        <Text>{`= ${percentageQuarterlyScore} * 20%`}</Text>
+                        <Text>{`= ${percentageQuarterlyScore} * ${percentageAssessment}`}</Text>
                         <br />
                         <Text as="b">{`= ${weightedQuarterlyScore}`}</Text>
                       </div>
@@ -255,7 +263,6 @@ function Breakdown({
           </TabPanel>
         </TabPanels>
       </Tabs>
-      <LineGraph {...{ max_written_works, written_works }} />
     </>
   );
 }

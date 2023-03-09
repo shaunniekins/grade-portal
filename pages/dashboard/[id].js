@@ -26,7 +26,9 @@ import { getGoogleSheetsClient } from "../../api/googleSheetsClient";
 import {
   sumArray,
   calculatePercentage,
-  calculateWeightedScore,
+  calculateWeightedScoreWritten,
+  calculateWeightedScorePerformance,
+  calculateWeightedScoreAssessment,
 } from "../../tools/utils";
 
 export async function getServerSideProps({ query }) {
@@ -63,8 +65,47 @@ export async function getServerSideProps({ query }) {
       max_written_works[i] = "";
     }
   }
-  const max_performance_tasks = responseMax.data.valueRanges[1].values;
+
+  // const max_performance_tasks = responseMax.data.valueRanges[1].values;
+  const max_performance_tasks = responseMax.data.valueRanges[1].values[0]
+    .slice(0, 10)
+    .map((val) => {
+      if (val === null || val === undefined) {
+        return " ";
+      } else {
+        return val;
+      }
+    });
+  max_performance_tasks.length = 10;
+  for (let i = 0; i < max_performance_tasks.length; i++) {
+    if (
+      max_performance_tasks[i] === null ||
+      max_performance_tasks[i] === undefined
+    ) {
+      max_performance_tasks[i] = "";
+    }
+  }
+
   const max_quarterly_assessment = responseMax.data.valueRanges[2].values;
+  // const max_quarterly_assessment = responseMax.data.valueRanges[2].values[0]
+  //   .slice(0, 10)
+  //   .map((val) => {
+  //     if (val === null || val === undefined) {
+  //       return " ";
+  //     } else {
+  //       return val;
+  //     }
+  //   });
+  // max_quarterly_assessment.length = 10;
+  // for (let i = 0; i < max_quarterly_assessment.length; i++) {
+  //   if (
+  //     max_quarterly_assessment[i] === null ||
+  //     max_quarterly_assessment[i] === undefined
+  //   ) {
+  //     max_quarterly_assessment[i] = "";
+  //   }
+  // }
+  // console.log(max_quarterly_assessment);
 
   //User
   const responseWPANU = await googleSheetsClient.spreadsheets.values.batchGet({
@@ -90,12 +131,35 @@ export async function getServerSideProps({ query }) {
     if (!written_works[i]) written_works[i] = "";
   }
 
-  const performance_tasks = responseWPANU.data.valueRanges[1].values.map(
-    (row) => row.map((val) => val || "")
-  );
+  // const performance_tasks = responseWPANU.data.valueRanges[1].values.map(
+  //   (row) => row.map((val) => val || "")
+  // );
+
+  const performance_tasks = responseWPANU.data.valueRanges[1].values[0]
+    .slice(0, 10)
+    .map((val) => {
+      if (!(val === null || val === undefined)) return val;
+    });
+  performance_tasks.length = 10;
+  for (let i = 0; i < performance_tasks.length; i++) {
+    if (!performance_tasks[i]) performance_tasks[i] = "";
+  }
+  console.log(performance_tasks);
+
   const quarterly_assessment = responseWPANU.data.valueRanges[2].values.map(
     (row) => row.map((val) => val || "")
   );
+
+  // const quarterly_assessment = responseWPANU.data.valueRanges[1].values[0]
+  //   .slice(0, 10)
+  //   .map((val) => {
+  //     if (!(val === null || val === undefined)) return val;
+  //   });
+  // quarterly_assessment.length = 10;
+  // for (let i = 0; i < quarterly_assessment.length; i++) {
+  //   if (!quarterly_assessment[i]) quarterly_assessment[i] = "";
+  // }
+
   const nameVal = responseWPANU.data.valueRanges[3].values.map((row) =>
     row.map((val) => val || "")
   );
@@ -128,6 +192,7 @@ const Post = (props) => {
     nameVal,
     userNameVal,
   } = props;
+  // console.log(max_quarterly_assessment);
 
   useAuth();
   const { query } = useRouter();
@@ -146,16 +211,18 @@ const Post = (props) => {
     sumYourWrittenScore,
     sumMaxWrittenScore
   );
-  const weightedWrittenScore = calculateWeightedScore(percentageWrittenScore);
+  const weightedWrittenScore = calculateWeightedScoreWritten(
+    percentageWrittenScore
+  );
 
   // Performance Tasks
-  const sumMaxPerformanceScore = sumArray(max_performance_tasks[0]);
-  const sumYourPerformanceScore = sumArray(performance_tasks[0]);
+  const sumMaxPerformanceScore = sumArray(max_performance_tasks);
+  const sumYourPerformanceScore = sumArray(performance_tasks);
   const percentagePerformanceScore = calculatePercentage(
     sumYourPerformanceScore,
     sumMaxPerformanceScore
   );
-  const weightedPerformanceScore = calculateWeightedScore(
+  const weightedPerformanceScore = calculateWeightedScorePerformance(
     percentagePerformanceScore
   );
 
@@ -166,7 +233,9 @@ const Post = (props) => {
     sumYourQuarterlyScore,
     sumMaxQuarterlyScore
   );
-  const weightedQuarterlyScore = (percentageQuarterlyScore * 0.2).toFixed(3);
+  const weightedQuarterlyScore = calculateWeightedScoreAssessment(
+    percentageQuarterlyScore
+  );
 
   // Calculate initial grade and transmuted grade
   const initialGrade = (
