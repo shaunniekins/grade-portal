@@ -25,33 +25,90 @@ export async function getServerSideProps() {
     ["https://www.googleapis.com/auth/spreadsheets.readonly"]
   );
   const sheets = google.sheets({ version: "v4", auth: client });
+  const sheetName1 = "KEPLER";
+  const sheetName2 = "PASTEUR";
+  const sheetName3 = "SCHWANN";
 
   //Query
-  const responseUser = await sheets.spreadsheets.values.get({
+  const responseUser1 = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.SHEET_ID,
-    range: `KEPLER!C11:C78`,
+    range: `${sheetName1}!C11:C78`,
   });
 
-  const responsePass = await sheets.spreadsheets.values.get({
+  const responsePass1 = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.SHEET_ID,
-    range: `KEPLER!B11:B78`,
+    range: `${sheetName1}!B11:B78`,
   });
+
+  const responseUser2 = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `${sheetName2}!C11:C78`,
+  });
+
+  const responsePass2 = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `${sheetName2}!B11:B78`,
+  });
+
+  const responseUser3 = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `${sheetName3}!C11:C78`,
+  });
+
+  const responsePass3 = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.SHEET_ID,
+    range: `${sheetName3}!B11:B78`,
+  });
+
   //Result
-  const user = [];
-  const pass = [];
-  responseUser.data.values.forEach((value) => user.push(value));
-  responsePass.data.values.forEach((value) => pass.push(value));
+  const user1 = [];
+  const pass1 = [];
+  responseUser1.data.values.forEach((value) => user1.push(value));
+  responsePass1.data.values.forEach((value) => pass1.push(value));
+
+  const user2 = [];
+  const pass2 = [];
+  responseUser2.data.values.forEach((value) => user2.push(value));
+  responsePass2.data.values.forEach((value) => pass2.push(value));
+
+  const user3 = [];
+  const pass3 = [];
+  responseUser3.data.values.forEach((value) => user3.push(value));
+  responsePass3.data.values.forEach((value) => pass3.push(value));
 
   return {
     props: {
-      user,
-      pass,
+      user1,
+      pass1,
+      user2,
+      pass2,
+      user3,
+      pass3,
+      sheetName1,
+      sheetName2,
+      sheetName3,
     },
   };
 }
 
-export default function Home({ user, pass }) {
-  const formattedUser = user.map((nameArr) => {
+export default function Home({
+  user1,
+  pass1,
+  user2,
+  pass2,
+  user3,
+  pass3,
+  sheetName1,
+  sheetName2,
+  sheetName3,
+}) {
+  // console.log(user1);
+  // console.log(user2);
+
+  const formattedUser1 = user1.map((nameArr) => {
+    if (nameArr.length < 1 || !nameArr[0]) {
+      return ""; // or some default value if nameArr is invalid
+    }
     const [lastName, firstName, middleInitial] = nameArr[0].split(", ");
     let formattedName = "";
 
@@ -59,16 +116,53 @@ export default function Home({ user, pass }) {
       formattedName = `${lastName.toLowerCase()}.${firstName
         .toLowerCase()
         .replace(/\s/g, "")}`;
-
       if (formattedName.slice(-1) === ".") {
         formattedName = formattedName.slice(0, -2);
       }
     }
-
     return formattedName;
   });
 
-  user = formattedUser;
+  const formattedUser2 = user2.map((nameArr) => {
+    if (nameArr.length < 1 || !nameArr[0]) {
+      return ""; // or some default value if nameArr is invalid
+    }
+    const [lastName, firstName, middleInitial] = nameArr[0].split(", ");
+    let formattedName = "";
+
+    if (typeof lastName === "string" && typeof firstName === "string") {
+      formattedName = `${lastName.toLowerCase()}.${firstName
+        .toLowerCase()
+        .replace(/\s/g, "")}`;
+      if (formattedName.slice(-1) === ".") {
+        formattedName = formattedName.slice(0, -2);
+      }
+    }
+    return formattedName;
+  });
+
+  const formattedUser3 = user3.map((nameArr) => {
+    if (nameArr.length < 1 || !nameArr[0]) {
+      return ""; // or some default value if nameArr is invalid
+    }
+    const [lastName, firstName, middleInitial] = nameArr[0].split(", ");
+    let formattedName = "";
+
+    if (typeof lastName === "string" && typeof firstName === "string") {
+      formattedName = `${lastName.toLowerCase()}.${firstName
+        .toLowerCase()
+        .replace(/\s/g, "")}`;
+      if (formattedName.slice(-1) === ".") {
+        formattedName = formattedName.slice(0, -2);
+      }
+    }
+    return formattedName;
+  });
+
+  user1 = formattedUser1;
+  user2 = formattedUser2;
+  user3 = formattedUser3;
+
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
 
@@ -77,22 +171,48 @@ export default function Home({ user, pass }) {
 
     let userExists = false;
     let count = 0;
+    let sheetName;
 
-    user.forEach(function (userV, i) {
+    user1.forEach(function (userV, i) {
       if (formData.username === userV) {
         count = i;
         userExists = true;
+        sheetName = sheetName1;
       }
     });
 
-    //authenticated
-    if (userExists && pass[count] == formData.password) {
+    user2.forEach(function (userV, i) {
+      if (formData.username === userV) {
+        count = i;
+        userExists = true;
+        sheetName = sheetName2;
+      }
+    });
+
+    user3.forEach(function (userV, i) {
+      if (formData.username === userV) {
+        count = i;
+        userExists = true;
+        sheetName = sheetName3;
+      }
+    });
+
+    let username = formData.username;
+    let password = formData.password;
+    let currentID = count + 11;
+    let lrn = password; //LRN was used as the password, so basically the same lrn === password
+
+    //authentication
+    if (userExists && pass1[count] == formData.password) {
       localStorage.setItem("isAuthenticated", "true");
-      Router.push(`/${count + 11}`);
-    } else if (userExists && pass[0][count] != formData.password) {
+      Router.push({
+        pathname: "/dashboard",
+        query: { sheetName, currentID, username, password, lrn },
+      });
+    } else if (userExists && pass1[0][count] != formData.password) {
       setError("Invalid password");
       alert("Incorrect password");
-    } else if (!userExists && pass[0][count] == formData.password) {
+    } else if (!userExists && pass1[0][count] == formData.password) {
       setError("Invalid username");
       alert("Incorrect username");
     } else {
@@ -106,7 +226,12 @@ export default function Home({ user, pass }) {
       <Head>
         <title>Grade Portal | Login</title>
       </Head>
-      <Flex bg="gray.100" align="center" justify="center" h="100vh">
+      <Flex
+        bg="gray.100"
+        align="center"
+        justify="center"
+        h="100vh"
+        userSelect={"none"}>
         <Card
           as="b"
           bg="white"

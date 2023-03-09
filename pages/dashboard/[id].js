@@ -2,9 +2,9 @@ import Head from "next/head";
 import Router from "next/router";
 import { React, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "./api/useAuth";
-import Layout from "../components/Layout";
-import T_Table from "../components/TransmutationTable";
+import { useAuth } from "../api/useAuth";
+import Layout from "../../components/Layout";
+import T_Table from "../../components/TransmutationTable";
 import {
   Button,
   Flex,
@@ -18,10 +18,16 @@ import {
   CircularProgressLabel,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import Breakdown from "../components/Breakdown";
-import UserLogin from "../components/UserLogin";
-import getRemarks from "./tools/remarks";
-import { getGoogleSheetsClient } from "../pages/api/googleSheetsClient";
+import Breakdown from "../../components/Breakdown";
+import UserLogin from "../../components/UserLogin";
+import getRemarks from "../tools/remarks";
+import { getGoogleSheetsClient } from "../api/googleSheetsClient";
+
+import {
+  sumArray,
+  calculatePercentage,
+  calculateWeightedScore,
+} from "../tools/utils";
 
 export async function getServerSideProps({ query }) {
   const googleSheetsClient = await getGoogleSheetsClient();
@@ -31,13 +37,13 @@ export async function getServerSideProps({ query }) {
   const sheetName = "KEPLER";
 
   //Highest Possible Score
-  const row = 9;
+  const ROW = 9;
   const responseMax = await googleSheetsClient.spreadsheets.values.batchGet({
     spreadsheetId: process.env.SHEET_ID,
     ranges: [
-      `${sheetName}!G${row}:P${row}`,
-      `${sheetName}!T${row}:AC${row}`,
-      `${sheetName}!AG${row}`,
+      `${sheetName}!G${ROW}:P${ROW}`,
+      `${sheetName}!T${ROW}:AC${ROW}`,
+      `${sheetName}!AG${ROW}`,
     ],
   });
 
@@ -132,24 +138,6 @@ const Post = (props) => {
     // Router.push("/");
     Router.push("https://grade-portal.vercel.app/");
   };
-
-  // Helper functions
-  const sumArray = (arr) => {
-    if (!Array.isArray(arr)) {
-      return 0;
-    }
-    return arr.reduce((a, b) => {
-      if (isNaN(parseInt(b))) {
-        return a;
-      } else {
-        return a + parseInt(b);
-      }
-    }, 0);
-  };
-
-  const calculatePercentage = (score, maxScore) =>
-    ((score / maxScore) * 100).toFixed(3);
-  const calculateWeightedScore = (percentage) => (percentage * 0.4).toFixed(3);
 
   // Written Works
   const sumMaxWrittenScore = sumArray(max_written_works);
@@ -288,7 +276,6 @@ const Post = (props) => {
                           {/* <Text fontSize={{ base: "md", lg: "xl" }}>
                             {`Remarks: \u00A0\u00A0\u00A0\u00A0`}
                           </Text> */}
-
                           <Text
                             fontSize={{ base: "md", md: "lg", lg: "2xl" }}
                             as="b">
@@ -360,7 +347,6 @@ const Post = (props) => {
                     }}
                   />
                 ) : (
-                  // <p></p>
                   <p> </p>
                 )}
               </TabPanel>
