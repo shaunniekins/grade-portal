@@ -11,3 +11,5 @@ export async function getGoogleSheetsClient() {
   const sheets = google.sheets({ version: "v4", auth: client });
   return sheets;
 }
+
+export default getGoogleSheetsClient;
