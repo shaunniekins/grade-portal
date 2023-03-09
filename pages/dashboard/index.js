@@ -17,7 +17,7 @@ import { Formik, Field } from "formik";
 import { useState, React } from "react";
 import Router, { useRouter } from "next/router";
 import ProfileCard from "../../components/ProfileCard";
-import { getGoogleSheetsClient } from "../api/googleSheetsClient";
+import { getGoogleSheetsClient } from "../../api/googleSheetsClient";
 
 const Dashboard = (props) => {
   const router = useRouter();

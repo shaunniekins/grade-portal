@@ -15,7 +15,7 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 
-import LineGraph from "../pages/tools/LineGraph";
+import LineGraph from "../tools/LineGraph";
 
 function Breakdown({
   writtenWorksLabel,

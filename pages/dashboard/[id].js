@@ -2,7 +2,7 @@ import Head from "next/head";
 import Router from "next/router";
 import { React, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "../api/useAuth";
+import { useAuth } from "../../api/useAuth";
 import Layout from "../../components/Layout";
 import T_Table from "../../components/TransmutationTable";
 import {
@@ -20,14 +20,14 @@ import {
 } from "@chakra-ui/react";
 import Breakdown from "../../components/Breakdown";
 import UserLogin from "../../components/UserLogin";
-import getRemarks from "../tools/remarks";
-import { getGoogleSheetsClient } from "../api/googleSheetsClient";
+import { getRemarks } from "../../tools/remarks";
+import { getGoogleSheetsClient } from "../../api/googleSheetsClient";
 
 import {
   sumArray,
   calculatePercentage,
   calculateWeightedScore,
-} from "../tools/utils";
+} from "../../tools/utils";
 
 export async function getServerSideProps({ query }) {
   const googleSheetsClient = await getGoogleSheetsClient();

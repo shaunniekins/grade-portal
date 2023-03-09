@@ -1,4 +1,4 @@
-export default function getRemarks(transmutedGrade) {
+export function getRemarks(transmutedGrade) {
   let remarks;
   if (transmutedGrade >= 90 && transmutedGrade <= 100) remarks = "Outstanding";
   else if (transmutedGrade >= 85 && transmutedGrade <= 89)

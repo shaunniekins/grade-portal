@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import keys from "../../secrets.json";
+import keys from "../secrets.json";
 
 export async function getGoogleSheetsClient() {
   const client = new google.auth.JWT(
@@ -11,5 +11,3 @@ export async function getGoogleSheetsClient() {
   const sheets = google.sheets({ version: "v4", auth: client });
   return sheets;
 }
-
-export default getGoogleSheetsClient;
