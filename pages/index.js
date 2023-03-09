@@ -13,8 +13,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Formik, Field } from "formik";
-import { useRouter } from "next/router";
 import { useState, React } from "react";
+import Router from "next/router";
 
 export async function getServerSideProps() {
   //Auth
@@ -29,14 +29,13 @@ export async function getServerSideProps() {
   //Query
   const responseUser = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!B12:B50`,
+    range: `KEPLER!C11:C78`,
   });
 
   const responsePass = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.SHEET_ID,
-    range: `SCIENCE Q1!C12:C50`,
+    range: `KEPLER!B11:B78`,
   });
-
   //Result
   const user = [];
   const pass = [];
@@ -52,8 +51,24 @@ export async function getServerSideProps() {
 }
 
 export default function Home({ user, pass }) {
-  const router = useRouter();
+  const formattedUser = user.map((nameArr) => {
+    const [lastName, firstName, middleInitial] = nameArr[0].split(", ");
+    let formattedName = "";
 
+    if (typeof lastName === "string" && typeof firstName === "string") {
+      formattedName = `${lastName.toLowerCase()}.${firstName
+        .toLowerCase()
+        .replace(/\s/g, "")}`;
+
+      if (formattedName.slice(-1) === ".") {
+        formattedName = formattedName.slice(0, -2);
+      }
+    }
+
+    return formattedName;
+  });
+
+  user = formattedUser;
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
 
@@ -64,19 +79,25 @@ export default function Home({ user, pass }) {
     let count = 0;
 
     user.forEach(function (userV, i) {
-      if (formData.username == userV[0]) {
+      if (formData.username === userV) {
         count = i;
         userExists = true;
       }
     });
 
-    if (userExists == true && pass[count] == formData.password) {
-      //authenticated
+    //authenticated
+    if (userExists && pass[count] == formData.password) {
       localStorage.setItem("isAuthenticated", "true");
-      router.push(`/${count + 12}`);
+      Router.push(`/${count + 11}`);
+    } else if (userExists && pass[0][count] != formData.password) {
+      setError("Invalid password");
+      alert("Incorrect password");
+    } else if (!userExists && pass[0][count] == formData.password) {
+      setError("Invalid username");
+      alert("Incorrect username");
     } else {
-      setError("Invalid username or password");
-      alert("Incorrect username or password");
+      setError("Invalid username and password");
+      alert("Incorrect username and password");
     }
   };
 

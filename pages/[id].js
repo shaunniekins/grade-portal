@@ -28,16 +28,16 @@ export async function getServerSideProps({ query }) {
 
   //Query
   const { id } = query;
-  const sheetName = "SCIENCE Q1";
+  const sheetName = "KEPLER";
 
   //Highest Possible Score
-  const row = 10;
+  const row = 9;
   const responseMax = await googleSheetsClient.spreadsheets.values.batchGet({
     spreadsheetId: process.env.SHEET_ID,
     ranges: [
-      `${sheetName}!H${row}:Q${row}`,
-      `${sheetName}!U${row}:AD${row}`,
-      `${sheetName}!AH${row}`,
+      `${sheetName}!G${row}:P${row}`,
+      `${sheetName}!T${row}:AC${row}`,
+      `${sheetName}!AG${row}`,
     ],
   });
 
@@ -64,11 +64,12 @@ export async function getServerSideProps({ query }) {
   const responseWPANU = await googleSheetsClient.spreadsheets.values.batchGet({
     spreadsheetId: process.env.SHEET_ID,
     ranges: [
-      `${sheetName}!H${id}:Q${id}`,
-      `${sheetName}!U${id}:AD${id}`,
-      `${sheetName}!AH${id}`,
-      `${sheetName}!D${id}`,
+      `${sheetName}!G${id}:P${id}`,
+      `${sheetName}!T${id}:AC${id}`,
+      `${sheetName}!AG${id}`,
+
       `${sheetName}!B${id}`,
+      `${sheetName}!C${id}`,
     ],
   });
 
@@ -112,7 +113,6 @@ export async function getServerSideProps({ query }) {
 
 const Post = (props) => {
   const {
-    id,
     max_written_works,
     max_performance_tasks,
     max_quarterly_assessment,
@@ -126,12 +126,11 @@ const Post = (props) => {
   useAuth();
   const { query } = useRouter();
   const [showBreakdown, setShowBreakdown] = useState(false);
-  // console.log(written_works);
   const handleClick = (e) => {
     e.preventDefault();
     sessionStorage.setItem("isAuthenticated", false);
-    Router.push("/");
-    // router.push("https://grade-portal.vercel.app/");
+    // Router.push("/");
+    Router.push("https://grade-portal.vercel.app/");
   };
 
   // Helper functions
