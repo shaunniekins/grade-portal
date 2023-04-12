@@ -25,8 +25,8 @@ export async function getServerSideProps() {
     ["https://www.googleapis.com/auth/spreadsheets.readonly"]
   );
   const sheets = google.sheets({ version: "v4", auth: client });
-  const sheetName1 = "KEPLER";
-  const sheetName2 = "PASTEUR";
+  const sheetName1 = "PASTEUR";
+  const sheetName2 = "THOMSON";
   const sheetName3 = "SCHWANN";
 
   //Query

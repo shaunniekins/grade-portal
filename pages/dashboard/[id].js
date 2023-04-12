@@ -38,7 +38,7 @@ export async function getServerSideProps({ query }) {
 
   //Query
   const { id } = query;
-  const sheetName = "KEPLER";
+  const sheetName = query.sheetNameDisplay;
 
   //Highest Possible Score
   const ROW = 9;

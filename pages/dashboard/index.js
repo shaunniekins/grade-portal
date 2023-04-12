@@ -66,8 +66,8 @@ const Dashboard = (props) => {
 
   let gradeDisplay = "";
   switch (sheetNameDisplay.toLowerCase()) {
-    case "kepler":
     case "pasteur":
+    case "thomson":
     case "schwann":
       gradeDisplay = "12";
       break;
