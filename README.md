@@ -1,36 +1,21 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Grade Portal
 
-## Getting Started
+**Grade Portal** is a web application designed to streamline grade management and visualization for both students and teachers.
 
-First, run the development server:
+### Functionality
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+- **Students:**
+  - View current grades for all their enrolled subjects.
+  - Access graphical representations of their performance for better understanding.
+- **Teachers:**
+  - Seamlessly import grade data from Google Sheets into the Grade Portal system.
+  - View and manage student grades within the platform.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Key Features
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+- **Secure student login:** Students can access their grades using secure login credentials.
+- **Real-time grade updates:** Changes made in Google Sheets are reflected in the Grade Portal promptly.
+- **Interactive grade visualization:** Students can view their progress and analyze their performance with graphs and charts.
+- **Simplified grade management:** Teachers can efficiently input and manage grades within the platform.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+**Note:** This project is discontinued and unused. The Google project and its API, as well as the Google Sheets data, have all been removed.
